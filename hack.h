@@ -66,7 +66,9 @@ public:
 	void drawDebug();
 	void drawStat();
 	void drawStatLn();
-	float* hack::getHead(CBaseEntity*);
+	void getHead(CBaseEntity*, float*);
+	void getBonePos(CBaseEntity*, int, float*);
+	void drawAllBones(CBaseEntity*, int, int);
 };
 
 struct myStruct {

@@ -27,7 +27,35 @@ struct hckStruct_t {
 int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
-float aimAt[3] = {1., 2., 4.};
+float aimAt[3];
+
+struct pointAt_t {
+	float pointaAt[3];
+	float aimAt[3];
+	float distanceAtIt;
+	float viewAngles[3];
+	pointAt_t()
+	{
+	}
+	void updateAngles(float* fromAngles)
+	{
+		viewAngles[0] = fromAngles[0];
+		viewAngles[1] = fromAngles[1];
+		viewAngles[2] = fromAngles[2];
+		pointaAt[0] = fromAngles[0];
+		pointaAt[1] = fromAngles[1];
+		pointaAt[2] = fromAngles[2];
+		//pointAt[0] = *(float*)fromAngles[0];
+	}
+	void setEnemy(float* aim, float* dist)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			aimAt[i] = aim[i];
+		}
+		distanceAtIt = *(float*)dist;
+	}
+} pointAtStruct;
 
 
 
@@ -35,7 +63,8 @@ float aimAt[3] = {1., 2., 4.};
 
 struct TargetList_t
 {
-	float Distance;
+	float distance3D;
+	float distance2D;
 	float AimbotAngle[3];
 
 	TargetList_t()
@@ -44,12 +73,12 @@ struct TargetList_t
 
 	TargetList_t(float aimbotAngle[], float myCoords[], float enemyCoords[])
 	{
-		Distance = Get3dDistance(myCoords[0], myCoords[1], myCoords[2],
-			enemyCoords[0], enemyCoords[1], enemyCoords[2]);
-
 		AimbotAngle[0] = aimbotAngle[0];
 		AimbotAngle[1] = aimbotAngle[1];
 		AimbotAngle[2] = aimbotAngle[2];
+
+		distance3D = Get3dDistance(myCoords[0], myCoords[1], myCoords[2], enemyCoords[0], enemyCoords[1], enemyCoords[2]);
+		distance2D = Get2dDistance();
 	}
 
 	float Get3dDistance(float myCoordsX, float myCoordsZ, float myCoordsY,
@@ -60,19 +89,33 @@ struct TargetList_t
 			pow(double(eNy - myCoordsY), 2.0) +
 			pow(double(eNz - myCoordsZ), 2.0));
 	}
-};
 
-
-
-
-struct CompareTargetEnArray
-{
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	float Get2dDistance()
 	{
-		return lhs.Distance < rhs.Distance;
+		return sqrt(
+			pow(double(AimbotAngle[0] - uberStruct.viewAngles.x), 2.0) +
+			pow(double(AimbotAngle[1] - uberStruct.viewAngles.y), 2.0));	
 	}
 };
 
+
+
+
+struct CompareTargetEnArray2D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	{
+		return lhs.distance2D < rhs.distance2D;
+	}
+};
+
+struct CompareTargetEnArray3D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	{
+		return lhs.distance3D < rhs.distance3D;
+	}
+};
 
 
 
@@ -103,34 +146,12 @@ MODULEINFO GetModuleInfo(char *szModule){
 	return modinfo;
 }
 
-void WriteToMemory(uintptr_t addressToWrite, char* valueToWrite, int byteNum)
-{
-	//used to change our file access type, stores the old
-	//access type and restores it after memory is written
-	unsigned long OldProtection;
-	//give that address read and write permissions and store the old permissions at oldProtection
-	VirtualProtect((LPVOID)(addressToWrite), byteNum, PAGE_EXECUTE_READWRITE, &OldProtection);
-
-	//write the memory into the program and overwrite previous value
-	memcpy((LPVOID)addressToWrite, valueToWrite, byteNum);
-
-	//reset the permissions of the address back to oldProtection after writting memory
-	VirtualProtect((LPVOID)(addressToWrite), byteNum, OldProtection, NULL);
-}
-
 
 DWORD FindPattern(char *module, char *pattern, char *mask)
 {
-	//Get all module related information
 	MODULEINFO mInfo = GetModuleInfo(module);
-
-	//Assign our base and module size
-	//Having the values right is ESSENTIAL, this makes sure
-	//that we don't scan unwanted memory and leading our game to crash
 	DWORD base = (DWORD)mInfo.lpBaseOfDll;
 	DWORD size = (DWORD)mInfo.SizeOfImage;
-
-	//Get length for our mask, this will allow us to loop through our array
 	DWORD patternLength = (DWORD)strlen(mask);
 
 	for (DWORD i = 0; i < size - patternLength; i++)
@@ -138,19 +159,13 @@ DWORD FindPattern(char *module, char *pattern, char *mask)
 		bool found = true;
 		for (DWORD j = 0; j < patternLength; j++)
 		{
-			//if we have a ? in our mask then we have true by default, 
-			//or if the bytes match then we keep searching until finding it or not
 			found &= mask[j] == '?' || pattern[j] == *(char*)(base + i + j);
 		}
-
-		//found = true, our entire pattern was found
-		//return the memory addy so we can write to it
 		if (found)
 		{
 			return base + i;
 		}
 	}
-
 	return NULL;
 }
 
@@ -162,7 +177,7 @@ void __fastcall traceLine(const Vector& start /*rcx*/, const Vector& end /*rdx*/
 	{
 		UTIL_TraceLine = (decltype(traceLine)*)FindPattern(
 			"client.dll",
-			"\x48\x8B\xC4\x48\x89\x58\x08\x48\x89\x70\x10\x57\x48\x81\xEC\x00\x00\x00\x00\xF3\x0F",
+			"\x48\x8B\xC4\x48\x89\x58\x08\x48\x89\x70\x10\x57\x48\x81\xEC\x00\x00\x00\x00\xF3\x0F", // fuck, wrong..!
 			"xxxxxxxxxxxxxxx????xx");
 	}
 
@@ -252,13 +267,13 @@ void __fastcall Hooked_CreateMove(void* ptr, int sequence_number, float input_sa
 			CUserCmd* pCmd = pInput->GetUserCmd(0, sequence_number);
 			if (pCmd)
 			{
+				//QAngle Punch = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
 				uberStruct.viewAngles = pCmd->viewangles;
-
-				if (NORECOIL_SWITCH && aimAt[0] != 1. && aimAt[1] != 2. && aimAt[2] != 4.)
+				if (NORECOIL_SWITCH)
 				{
 					pCmd->viewangles.x = aimAt[0];
 					pCmd->viewangles.y = aimAt[1];
-					pCmd->viewangles.z = aimAt[2];
+					pCmd->viewangles.z = 0; // aimAt[2];
 				}
 				
 			}
@@ -277,6 +292,9 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 	static float distFromMe;
 	static byte type, isEnemy, a;
 	static VPANEL mstp = NULL;
+
+
+	static wchar_t buff[512];
 
 	if (mstp == NULL)
 	{
@@ -322,8 +340,11 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			myHack->inTheMiddle(vguiPanel);
 		}
 
+		// 
+		// aim part
+		//
 		int targetLoop = 0;
-		TargetList_t* TargetList = new TargetList_t[core->g_pEntList->GetHighestEntityIndex()];
+		TargetList_t* TargetList = new TargetList_t[32];
 
 		for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 		{
@@ -371,6 +392,14 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			type = 1;
 			// GET CLASS / MODEL NAME??????????????????????
 			// GET CLASS / MODEL NAME??????????????????????
+			if (__DEBUG && 0)
+			{
+				swprintf_s(buff, L"%S", player->GetPlayerModel());
+				//core->g_pSurface->DrawSetColor(255, 255, 255, 255);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 30);
+				core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+			}
+
 			// GET CLASS / MODEL NAME??????????????????????
 			core->g_pEngine->GetPlayerInfo(i, &pInfo);
 			if (strlen(pInfo.szName) < 6)
@@ -387,6 +416,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			// is enemy?
 			isEnemy = *(int*)(DWORD64(player) + m_iTeamNum) != *(int*)(DWORD64(myPlayer) + m_iTeamNum);
 
+
 			// set color
 			if (isEnemy)
 			{
@@ -402,15 +432,30 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			case 1: // player
 				myHack->drawPlayer(player, distFromMe, isEnemy);
 
-				float aimAngle[3];
+				if (isEnemy)
+				{
+					static float aimAngle[3], myHeadPosition[3], enemyHeadPosition[3];
 
-				// aimbot
-				CalcAngle(myHack->getHead(myPlayer), myHack->getHead(player), aimAngle);
+					myHack->getBonePos(myPlayer, 10, myHeadPosition);
+					myHack->getHead(player, enemyHeadPosition);
 
-				TargetList[targetLoop] = TargetList_t(aimAngle, myHack->getHead(myPlayer), myHack->getHead(player));
-				targetLoop++;
+					CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
 
+					TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
+					
+					if (__DEBUG)
+					{
+						swprintf_s(buff, L"%.2f", TargetList[targetLoop].distance2D);
+						core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
+						core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+					}
 
+					targetLoop++;
+				}
+				else
+				{
+					myHack->drawAllBones(player, 0, 14);
+				}
 				break;
 			case 2: // titan
 				if (isEnemy)
@@ -437,7 +482,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			if (__DEBUG)
 			{
 				myHack->drawStatLn();
-				myHack->drawDebug();
+				// myHack->drawDebug();
 
 				/*
 				Trace trc;
@@ -456,29 +501,24 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			}
 		}
 
-		if (NORECOIL_SWITCH)
+		if (NORECOIL_SWITCH) //  && GetAsyncKeyState(VK_LBUTTON)) // && Plat_FloatTime() % 2
 		{
-			//QAngle Punch = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
 			if (targetLoop > 0)
 			{
-				std::sort(TargetList, TargetList + targetLoop, CompareTargetEnArray());
+				static float MAX_AIM_DISTANCE = 1.9;
 
-				if (TargetList[0].Distance < 4)
+				std::sort(TargetList, TargetList + targetLoop, CompareTargetEnArray2D());
+				if (TargetList[0].distance2D < MAX_AIM_DISTANCE)
 				{
 					aimAt[0] = TargetList[0].AimbotAngle[0];
 					aimAt[1] = TargetList[0].AimbotAngle[1];
-					aimAt[2] = TargetList[0].AimbotAngle[2];
-				}
-				else
-				{
-					aimAt[0] = 1.;
-					aimAt[1] = 2.;
-					aimAt[2] = 4.;
+					aimAt[2] = 0;
 				}
 			}
-			targetLoop = 0;
-			delete[] TargetList;
 		}
+
+		targetLoop = 0;
+		delete[] TargetList;
 	}
 }
 

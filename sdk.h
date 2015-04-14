@@ -113,6 +113,12 @@ public:
 		typedef bool(__thiscall* OriginalFn)(PVOID, matrix3x4*, int, int, float);
 		return getvfunc<OriginalFn>(pRenderable, 13)(pRenderable, pBoneToWorldOut, nMaxBones, boneMask, currentTime);
 	}
+	const char* GetPlayerModel()
+	{
+		PVOID pRenderable = (PVOID)(this + 0x8);
+		typedef char*(__thiscall* OriginalFn)(PVOID);
+		return getvfunc<OriginalFn>(pRenderable, 8)(pRenderable);
+	}
 };
 
 struct QAngle

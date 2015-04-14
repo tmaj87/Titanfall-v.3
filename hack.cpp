@@ -141,28 +141,33 @@ void hack::getMatrix()
 }
 
 
-float* hack::getHead(CBaseEntity* player)
+void hack::getHead(CBaseEntity* player, float* posToWrite)
 {
-
-	float headPos[3] = {0, 0, 0};
-	matrix3x4 boneList[128];
+	static matrix3x4 boneList[128];
+	static int boneId = 12;
 
 	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
 	{
 		if (boneList[11][2][3] > boneList[12][2][3])
 		{
-			headPos[0] = boneList[11][0][3];
-			headPos[1] = boneList[11][1][3];
-			headPos[2] = boneList[11][2][3];
+			boneId = 11;
 		}
-		else
-		{
-			headPos[0] = boneList[12][0][3];
-			headPos[1] = boneList[12][1][3];
-			headPos[2] = boneList[12][2][3];
-		}
+		posToWrite[0] = boneList[boneId][0][3];
+		posToWrite[1] = boneList[boneId][1][3];
+		posToWrite[2] = boneList[boneId][2][3];
 	}
-	return headPos;
+}
+
+void hack::getBonePos(CBaseEntity* player, int boneId, float* posToWrite)
+{
+	static matrix3x4 boneList[128];
+
+	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
+	{
+		posToWrite[0] = boneList[boneId][0][3];
+		posToWrite[1] = boneList[boneId][1][3];
+		posToWrite[2] = boneList[boneId][2][3];
+	}
 }
 
 void hack::drawPlayer(CBaseEntity* player, float distance, byte isEnemy)
@@ -427,6 +432,34 @@ void hack::drawDebug() // myStruct uberStruct
 	if (NORECOIL_SWITCH && RADAR_SWITCH)
 	{
 		//drawPunchedCrosshair(vec2.x, vec2.y);
+	}
+}
+
+void hack::drawAllBones(CBaseEntity* player, int from, int to)
+{
+	const int VECTOR_SIZE_ADDON = 1;
+	static matrix3x4 boneList[128];
+	static Vector bone, boneScreen;
+	static Vector boneTop, boneBottom, screenTop, screenBottom;
+	static wchar_t buff[512];
+
+	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
+	{
+		for (int i = from; i < to; i++)
+		{
+			bone = Vector(boneList[i][0][3], boneList[i][1][3], boneList[i][2][3]);
+			boneTop = bone + Vector(0, 0, VECTOR_SIZE_ADDON);
+			boneBottom = bone - Vector(0, 0, VECTOR_SIZE_ADDON);
+
+			if (w2s(bone, boneScreen) && w2s(boneTop, screenTop) && w2s(boneBottom, screenBottom))
+			{
+				swprintf_s(buff, L"%d", i);
+				core->g_pSurface->DrawOutlineRectangle(screenTop.x - VECTOR_SIZE_ADDON, screenTop.y, screenBottom.x + VECTOR_SIZE_ADDON, screenBottom.y);
+				core->g_pSurface->DrawSetTextColor(255, 255, 255, 255);
+				core->g_pSurface->DrawSetTextPos(boneScreen.x, boneScreen.y);
+				core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+			}
+		}
 	}
 }
 
