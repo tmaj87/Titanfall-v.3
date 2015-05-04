@@ -1,5 +1,7 @@
 #include "header.h"
 
+
+
 void CoreHaxFunc::keyManager()
 {
 	const byte MAIN_SWITCH_KEY = VK_F5;
@@ -47,3 +49,52 @@ void CoreHaxFunc::keyManager()
 }
 
 
+void CoreHaxFunc::CalcAngle(float* src, float* dst, float* angles)
+{
+	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
+	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
+
+
+	//double distance, yaw, pitch;
+	//distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
+	//yaw = atan(delta[1] / delta[0]);
+	//pitch = acos(delta[2] / distance);
+
+
+	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);  //(float)atan2(delta[2], delta[0]); // yaw; //  // yaw
+	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI); // (float)atan2(hyp, delta[1]) + M_RADPI; //  pitch; // (float)(atan(delta[1] / delta[0]) * M_RADPI); // pitch
+	angles[2] = 0.0f;
+
+	if (delta[0] >= 0.0) { angles[1] += 180.0f; }
+}
+
+
+void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
+{
+	//Assert(s_bMathlibInitialized);
+	float	tmp, yaw, pitch;
+
+	if (forward[1] == 0 && forward[0] == 0)
+	{
+		yaw = 0;
+		if (forward[2] > 0)
+			pitch = 270;
+		else
+			pitch = 90;
+	}
+	else
+	{
+		yaw = (atan2(forward[1], forward[0]) * 180 / M_RADPI); // M_PI);
+		if (yaw < 0)
+			yaw += 360;
+
+		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
+		pitch = (atan2(-forward[2], tmp) * 180 / M_RADPI); // M_PI);
+		if (pitch < 0)
+			pitch += 360;
+	}
+
+	angles[0] = pitch;
+	angles[1] = yaw;
+	angles[2] = 0;
+}

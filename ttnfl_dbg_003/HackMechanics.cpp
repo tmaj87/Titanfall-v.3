@@ -11,127 +11,6 @@ float const MIN_AIM_DISTANCE = 30;
 float const CRITICAL_3D_DISTANCE = 150;
 float const MAX_3D_DISTANCE = 500;
 
-
-struct TargetList_t
-{
-	float distance3D;
-	float distance2D;
-	float AimbotAngle[3];
-	//float oEnemyCoords[3];
-	//float oMyCoords[3];
-
-	TargetList_t()
-	{
-	}
-
-	TargetList_t(float aimbotAngle[], float myCoords[], float enemyCoords[])
-	{
-		//oEnemyCoords = enemyCoords;
-		//oMyCoords = myCoords;
-
-		AimbotAngle[0] = aimbotAngle[0];
-		AimbotAngle[1] = aimbotAngle[1];
-		AimbotAngle[2] = aimbotAngle[2];
-
-		distance3D = Get3dDistance(myCoords[0], myCoords[1], myCoords[2], enemyCoords[0], enemyCoords[1], enemyCoords[2]);
-		distance2D = Get2dDistance();
-	}
-
-	float Get3dDistance(float myCoordsX, float myCoordsZ, float myCoordsY,
-		float eNx, float eNz, float eNy)
-	{
-		return sqrt(
-			pow(double(eNx - myCoordsX), 2.0) +
-			pow(double(eNy - myCoordsY), 2.0) +
-			pow(double(eNz - myCoordsZ), 2.0));
-	}
-
-	float Get2dDistance()
-	{
-		return sqrt(
-			pow(double(AimbotAngle[0] - uberStruct.viewAngles.x), 2.0) +
-			pow(double(AimbotAngle[1] - uberStruct.viewAngles.y), 2.0));
-	}
-};
-
-
-
-
-struct CompareTargetEnArray2D
-{
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
-	{
-		return lhs.distance2D < rhs.distance2D;
-	}
-};
-
-struct CompareTargetEnArray3D
-{
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
-	{
-		return lhs.distance3D < rhs.distance3D;
-	}
-};
-
-
-
-
-
-
-
-
-
-void CalcAngle(float* src, float* dst, float* angles)
-{
-	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
-	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
-
-
-	//double distance, yaw, pitch;
-	//distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
-	//yaw = atan(delta[1] / delta[0]);
-	//pitch = acos(delta[2] / distance);
-
-
-	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);  //(float)atan2(delta[2], delta[0]); // yaw; //  // yaw
-	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI); // (float)atan2(hyp, delta[1]) + M_RADPI; //  pitch; // (float)(atan(delta[1] / delta[0]) * M_RADPI); // pitch
-	angles[2] = 0.0f;
-
-	if (delta[0] >= 0.0) { angles[1] += 180.0f; }
-}
-
-
-void VectorAngles(const float *forward, float *angles)
-{
-	//Assert(s_bMathlibInitialized);
-	float	tmp, yaw, pitch;
-
-	if (forward[1] == 0 && forward[0] == 0)
-	{
-		yaw = 0;
-		if (forward[2] > 0)
-			pitch = 270;
-		else
-			pitch = 90;
-	}
-	else
-	{
-		yaw = (atan2(forward[1], forward[0]) * 180 / M_RADPI); // M_PI);
-		if (yaw < 0)
-			yaw += 360;
-
-		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
-		pitch = (atan2(-forward[2], tmp) * 180 / M_RADPI); // M_PI);
-		if (pitch < 0)
-			pitch += 360;
-	}
-
-	angles[0] = pitch;
-	angles[1] = yaw;
-	angles[2] = 0;
-}
-
-
 HackMechanics::HackMechanics()
 {
 }
@@ -139,6 +18,11 @@ HackMechanics::HackMechanics()
 
 HackMechanics::~HackMechanics()
 {
+}
+
+void HackMechanics::aimAtThisPlayer(CBaseEntity* player)
+{
+	//
 }
 
 
@@ -329,7 +213,7 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 					enemyHeadPosition[1] -= punchVec[1];
 					enemyHeadPosition[2] -= punchVec[2];
 
-					CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
+					CoreHaxFunc::CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
 					//VectorAngles(myHeadPosition, enemyHeadPosition);
 
 					TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
