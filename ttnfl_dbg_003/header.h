@@ -36,7 +36,7 @@ for linker errors:
 */
 
 
-struct hckStruct_t {
+typedef struct hckStruct_t{
 	float aimAt[3];
 
 	void fillData()
@@ -48,7 +48,7 @@ struct hckStruct_t {
 
 
 
-struct pointAt_t {
+typedef struct pointAt_t{
 	float pointaAt[3];
 	float aimAt[3];
 	float distanceAtIt;
