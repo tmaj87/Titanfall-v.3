@@ -10,54 +10,22 @@ hack* myHack;
 
 bool __DEBUG = 0;
 char __DEBUG_BUFF[512];
+wchar_t __DEBUG_BUFF_W[512];
 bool MAIN_SWITCH = 0;
 bool CROSSHAIR_SWITCH = 1;
 bool RADAR_SWITCH = 1;
-bool NORECOIL_SWITCH = 0;
-
-struct hckStruct_t {
-	float aimAt[3];
-
-	void fillData()
-	{
-		//
-	}
-} hckStruct;
+bool NORECOIL_SWITCH = 1;
 
 int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
-float aimAt[3];
+float aimAt[3] = {0, 0, 0};
+float bufferedAim[3] = { 0, 0, 0 };
 
-struct pointAt_t {
-	float pointaAt[3];
-	float aimAt[3];
-	float distanceAtIt;
-	float viewAngles[3];
-	pointAt_t()
-	{
-	}
-	void updateAngles(float* fromAngles)
-	{
-		viewAngles[0] = fromAngles[0];
-		viewAngles[1] = fromAngles[1];
-		viewAngles[2] = fromAngles[2];
-		pointaAt[0] = fromAngles[0];
-		pointaAt[1] = fromAngles[1];
-		pointaAt[2] = fromAngles[2];
-		//pointAt[0] = *(float*)fromAngles[0];
-	}
-	void setEnemy(float* aim, float* dist)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			aimAt[i] = aim[i];
-		}
-		distanceAtIt = *(float*)dist;
-	}
-} pointAtStruct;
-
-
+float const MAX_AIM_DISTANCE = 8;
+float const MIN_AIM_DISTANCE = 30;
+float const CRITICAL_3D_DISTANCE = 150;
+float const MAX_3D_DISTANCE = 500;
 
 
 
@@ -66,6 +34,8 @@ struct TargetList_t
 	float distance3D;
 	float distance2D;
 	float AimbotAngle[3];
+	//float oEnemyCoords[3];
+	//float oMyCoords[3];
 
 	TargetList_t()
 	{
@@ -73,6 +43,9 @@ struct TargetList_t
 
 	TargetList_t(float aimbotAngle[], float myCoords[], float enemyCoords[])
 	{
+		//oEnemyCoords = enemyCoords;
+		//oMyCoords = myCoords;
+
 		AimbotAngle[0] = aimbotAngle[0];
 		AimbotAngle[1] = aimbotAngle[1];
 		AimbotAngle[2] = aimbotAngle[2];
@@ -130,106 +103,49 @@ void CalcAngle(float* src, float* dst, float* angles)
 	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
 	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
 
-	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI); // atan?
-	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI);
+
+	//double distance, yaw, pitch;
+	//distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
+	//yaw = atan(delta[1] / delta[0]);
+	//pitch = acos(delta[2] / distance);
+
+
+	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);  //(float)atan2(delta[2], delta[0]); // yaw; //  // yaw
+	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI); // (float)atan2(hyp, delta[1]) + M_RADPI; //  pitch; // (float)(atan(delta[1] / delta[0]) * M_RADPI); // pitch
 	angles[2] = 0.0f;
 
 	if (delta[0] >= 0.0) { angles[1] += 180.0f; }
 }
 
-MODULEINFO GetModuleInfo(char *szModule){
-	MODULEINFO modinfo = { 0 };
-	HMODULE hModule = GetModuleHandle(szModule);
-	if (hModule == 0)
-		return modinfo;
-	GetModuleInformation(GetCurrentProcess(), hModule, &modinfo, sizeof(MODULEINFO));
-	return modinfo;
-}
 
-
-DWORD FindPattern(char *module, char *pattern, char *mask)
+void VectorAngles(const float *forward, float *angles)
 {
-	MODULEINFO mInfo = GetModuleInfo(module);
-	DWORD base = (DWORD)mInfo.lpBaseOfDll;
-	DWORD size = (DWORD)mInfo.SizeOfImage;
-	DWORD patternLength = (DWORD)strlen(mask);
+	//Assert(s_bMathlibInitialized);
+	float	tmp, yaw, pitch;
 
-	for (DWORD i = 0; i < size - patternLength; i++)
+	if (forward[1] == 0 && forward[0] == 0)
 	{
-		bool found = true;
-		for (DWORD j = 0; j < patternLength; j++)
-		{
-			found &= mask[j] == '?' || pattern[j] == *(char*)(base + i + j);
-		}
-		if (found)
-		{
-			return base + i;
-		}
+		yaw = 0;
+		if (forward[2] > 0)
+			pitch = 270;
+		else
+			pitch = 90;
 	}
-	return NULL;
-}
-
-void __fastcall traceLine(const Vector& start /*rcx*/, const Vector& end /*rdx*/, unsigned int mask /*r8*/, const void* ignore /*r9*/, int collisionGroup, int unk, Trace* trace)
-{
-	static decltype(traceLine)* UTIL_TraceLine;
-
-	if (!UTIL_TraceLine)
+	else
 	{
-		UTIL_TraceLine = (decltype(traceLine)*)FindPattern(
-			"client.dll",
-			"\x48\x8B\xC4\x48\x89\x58\x08\x48\x89\x70\x10\x57\x48\x81\xEC\x00\x00\x00\x00\xF3\x0F", // fuck, wrong..!
-			"xxxxxxxxxxxxxxx????xx");
+		yaw = (atan2(forward[1], forward[0]) * 180 / M_RADPI); // M_PI);
+		if (yaw < 0)
+			yaw += 360;
+
+		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
+		pitch = (atan2(-forward[2], tmp) * 180 / M_RADPI); // M_PI);
+		if (pitch < 0)
+			pitch += 360;
 	}
 
-	UTIL_TraceLine(start, end, mask, ignore, collisionGroup, unk, trace);
-}
-
-
-
-void keyManager()
-{
-	const byte MAIN_SWITCH_KEY = VK_F5;
-	const byte NORECOIL_SWITCH_KEY = VK_F8;
-	const byte RADAR_SWITCH_KEY = VK_F6;
-	const byte __DEBUG_KEY = VK_F9;
-	const byte CROSSHAIR_SWITCH_KEY = VK_F7;
-
-	static bool keyBlock[5] = {1, 1, 1, 1, 1};
-
-	if (GetAsyncKeyState(MAIN_SWITCH_KEY) && keyBlock[0])
-	{
-		keyBlock[0] = 0;
-		MAIN_SWITCH = MAIN_SWITCH > 0 ? 0 : 1;
-	}
-	else if (!GetAsyncKeyState(MAIN_SWITCH_KEY) && !keyBlock[0]) keyBlock[0] = 1;
-
-	if (GetAsyncKeyState(NORECOIL_SWITCH_KEY) && keyBlock[1])
-	{
-		keyBlock[1] = 0;
-		NORECOIL_SWITCH = NORECOIL_SWITCH > 0 ? 0 : 1;
-	}
-	else if (!GetAsyncKeyState(NORECOIL_SWITCH_KEY) && !keyBlock[1]) keyBlock[1] = 1;
-
-	if (GetAsyncKeyState(RADAR_SWITCH_KEY) && keyBlock[2])
-	{
-		keyBlock[2] = 0;
-		RADAR_SWITCH = RADAR_SWITCH > 0 ? 0 : 1;
-	}
-	else if (!GetAsyncKeyState(RADAR_SWITCH_KEY) && !keyBlock[2]) keyBlock[2] = 1;
-
-	if (GetAsyncKeyState(__DEBUG_KEY) && keyBlock[3])
-	{
-		keyBlock[3] = 0;
-		__DEBUG = __DEBUG > 0 ? 0 : 1;
-	}
-	else if (!GetAsyncKeyState(__DEBUG_KEY) && !keyBlock[3]) keyBlock[3] = 1;
-
-	if (GetAsyncKeyState(CROSSHAIR_SWITCH_KEY) && keyBlock[4])
-	{
-		keyBlock[4] = 0;
-		CROSSHAIR_SWITCH = CROSSHAIR_SWITCH > 0 ? 0 : 1;
-	}
-	else if (!GetAsyncKeyState(CROSSHAIR_SWITCH_KEY) && !keyBlock[4]) keyBlock[4] = 1;
+	angles[0] = pitch;
+	angles[1] = yaw;
+	angles[2] = 0;
 }
 
 
@@ -269,11 +185,11 @@ void __fastcall Hooked_CreateMove(void* ptr, int sequence_number, float input_sa
 			{
 				//QAngle Punch = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
 				uberStruct.viewAngles = pCmd->viewangles;
-				if (NORECOIL_SWITCH)
+				if (NORECOIL_SWITCH && aimAt[2] && GetAsyncKeyState(VK_MENU) & 0x8000) // ALT KEY // && sequence_number%2
 				{
+					// buffered aim;
 					pCmd->viewangles.x = aimAt[0];
 					pCmd->viewangles.y = aimAt[1];
-					pCmd->viewangles.z = 0; // aimAt[2];
 				}
 				
 			}
@@ -292,9 +208,6 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 	static float distFromMe;
 	static byte type, isEnemy, a;
 	static VPANEL mstp = NULL;
-
-
-	static wchar_t buff[512];
 
 	if (mstp == NULL)
 	{
@@ -344,7 +257,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 		// aim part
 		//
 		int targetLoop = 0;
-		TargetList_t* TargetList = new TargetList_t[32];
+		TargetList_t* TargetList = new TargetList_t[64];
 
 		for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 		{
@@ -392,12 +305,12 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			type = 1;
 			// GET CLASS / MODEL NAME??????????????????????
 			// GET CLASS / MODEL NAME??????????????????????
-			if (__DEBUG && 0)
+			if (__DEBUG)
 			{
-				swprintf_s(buff, L"%S", player->GetPlayerModel());
+				//swprintf_s(buff, L"%S", player->GetPlayerModel());
 				//core->g_pSurface->DrawSetColor(255, 255, 255, 255);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 30);
-				core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+				//core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 30);
+				//core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 			}
 
 			// GET CLASS / MODEL NAME??????????????????????
@@ -434,12 +347,16 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 
 				if (isEnemy)
 				{
-					static float aimAngle[3], myHeadPosition[3], enemyHeadPosition[3];
-
-					myHack->getBonePos(myPlayer, 10, myHeadPosition);
+					static float aimAngle[3], enemyHeadPosition[3];
+					static float* myHeadPosition;
+					/*
+					//myHack->getBonePos(myPlayer, 10, myHeadPosition);
+					myHack->getHead(myPlayer, myHeadPosition);
 					myHack->getHead(player, enemyHeadPosition);
 
 					CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
+
+					enemyHeadPosition[1] += 3;
 
 					TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
 					
@@ -451,11 +368,39 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 					}
 
 					targetLoop++;
+					*/
+
+					//myHack->getBonePos(myPlayer, 7, myHeadPosition);
+					myHeadPosition = myHack->getEyePosition(myPlayer);
+					//myHack->getHead(myPlayer, myHeadPosition);
+					//myHack->getHead(player, enemyHeadPosition);
+					myHack->getBonePos(player, 10, enemyHeadPosition);
+
+					Vector movePunch = *(Vector*)(myPlayer + m_local + m_vecPunchBase_Angle);
+					Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
+
+					enemyHeadPosition[0] -= punchVec[0]; // -movePunch[0];
+					enemyHeadPosition[1] -= punchVec[1]; // -movePunch[1];
+					enemyHeadPosition[2] -= punchVec[2]; // -movePunch[2];
+
+					//myHack->getBonePos(player, 7, enemyHeadPosition);
+
+					CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle); // 5, 6, 7
+					VectorAngles(myHeadPosition, enemyHeadPosition);
+					TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
+
+
+					if (__DEBUG)
+					{
+						//myHack->drawAllBones(player, 0, 14);
+						swprintf_s(__DEBUG_BUFF_W, L"%.2f", TargetList[targetLoop].distance2D);
+						core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
+						core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+					}
+
+					targetLoop++;
 				}
-				else
-				{
-					myHack->drawAllBones(player, 0, 14);
-				}
+				
 				break;
 			case 2: // titan
 				if (isEnemy)
@@ -469,12 +414,25 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 				{
 					continue;
 				}
+
+				static float aimAngle[3], enemyHeadPosition[3];
+				static float* myHeadPosition;
+
+				//myHack->getBonePos(myPlayer, 7, myHeadPosition);
+				myHeadPosition = myHack->getEyePosition(myPlayer);
+				//myHack->getHead(myPlayer, myHeadPosition);
+				//myHack->getHead(player, enemyHeadPosition);
+				myHack->getBonePos(player, 10, enemyHeadPosition);
+				CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
+				TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
+				targetLoop++;
+
 				core->g_pSurface->DrawSetColor(255, 255, 0, a);
 				myHack->drawMinion(player, distFromMe, isEnemy);
 				break;
 			}
 
-			if (RADAR_SWITCH && type != 3 && isEnemy)
+			if (RADAR_SWITCH && type != 3) //  && isEnemy)
 			{
 				myHack->drawOnRadar(screenPos);
 			}
@@ -482,7 +440,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			if (__DEBUG)
 			{
 				myHack->drawStatLn();
-				// myHack->drawDebug();
+				myHack->drawDebug();
 
 				/*
 				Trace trc;
@@ -501,20 +459,47 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			}
 		}
 
+
+
+		// aimbot..!
+		TargetList_t *cpyOfTrgtLst3D, *cpyOfTrgtLst2D;
+		if (targetLoop > 0)
+		{
+			cpyOfTrgtLst3D = TargetList;
+			cpyOfTrgtLst2D = TargetList;
+			std::sort(cpyOfTrgtLst2D, TargetList + targetLoop, CompareTargetEnArray2D());
+			std::sort(cpyOfTrgtLst3D, TargetList + targetLoop, CompareTargetEnArray3D());
+
+			if (((
+				cpyOfTrgtLst2D[0].distance2D < MAX_AIM_DISTANCE
+				//|| cpyOfTrgtLst3D[0].distance3D < MAX_3D_DISTANCE
+				)
+				//&& cpyOfTrgtLst2D[0].distance2D < MIN_AIM_DISTANCE
+				)
+				//|| cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE
+				)
+			{
+				aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
+				aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
+				/*
+				if (cpyOfTrgtLst3D[0].distance3D < MAX_3D_DISTANCE)
+				{
+					aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
+					aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
+				}
+				*/
+				aimAt[2] = 1;
+			}
+			else
+			{
+				aimAt[2] = 0;
+			}
+		}
+
 		if (NORECOIL_SWITCH) //  && GetAsyncKeyState(VK_LBUTTON)) // && Plat_FloatTime() % 2
 		{
-			if (targetLoop > 0)
-			{
-				static float MAX_AIM_DISTANCE = 1.9;
-
-				std::sort(TargetList, TargetList + targetLoop, CompareTargetEnArray2D());
-				if (TargetList[0].distance2D < MAX_AIM_DISTANCE)
-				{
-					aimAt[0] = TargetList[0].AimbotAngle[0];
-					aimAt[1] = TargetList[0].AimbotAngle[1];
-					aimAt[2] = 0;
-				}
-			}
+			//cpyOfTrgtLst2D[0].
+			//myHack->drawCrossAt(x, y);
 		}
 
 		targetLoop = 0;
@@ -522,27 +507,6 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 	}
 }
 
-void DoMeAFavour()
-{
-	VMThook = new cvmth64();
-	VMThook2 = new cvmth64();
-
-	core = new base();
-	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
-	{
-		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)pt, 46);
-		myHack = new hack();
-
-		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
-		{
-			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)Hooked_CreateMove, 24);
-		}
-	}
-	else
-	{
-		MessageBox(NULL, "error", "", MB_OK);
-	}
-}
 
 
 
@@ -554,7 +518,7 @@ BOOL APIENTRY DllMain(HMODULE handle, DWORD  reason, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(handle);
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)DoMeAFavour, NULL, 0, NULL);
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)CoreHaxFunc::DoMeAFavour(), NULL, 0, NULL);
 		break;
 	}
 	return 1;

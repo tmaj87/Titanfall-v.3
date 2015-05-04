@@ -45,6 +45,10 @@ const DWORD64 m_vecPunchBase_Angle = 0x3C;
 const DWORD64 m_vecPunchBase_AngleVel = 0x48;
 const DWORD64 m_vecPunchWeapon_Angle = 0x54;
 const DWORD64 m_vecPunchWeapon_AngleVel = 0x4;
+//
+const DWORD64 m_vecViewOffset_x = 0x1E4;
+const DWORD64 m_vecViewOffset_y = 0x1E8;
+const DWORD64 m_vecViewOffset_z = 0x1EC;
 
 class ClientClass
 {

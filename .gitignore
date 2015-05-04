@@ -41,3 +41,17 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+ttnfl_dbg_003.sdf
+*.opensdf
+ttnfl_dbg_003.sln
+*.suo
+ttnfl_dbg_003/ttnfl_dbg_003.vcxproj
+*.filters
+ttnfl_dbg_003/ttnfl_dbg_003.vcxproj.user
+x64/Release/ttnfl_dbg_003.dll
+*.pdb
+ttnfl_dbg_003/x64/Release/ttnfl_dbg_003.tlog/link.read.1.tlog
+*.tlog
+ttnfl_dbg_003/x64/Release/ttnfl_dbg_003.log
+*.log
+*.obj

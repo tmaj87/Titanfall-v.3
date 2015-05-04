@@ -158,6 +158,7 @@ void hack::getHead(CBaseEntity* player, float* posToWrite)
 	}
 }
 
+// gets 128 bones...
 void hack::getBonePos(CBaseEntity* player, int boneId, float* posToWrite)
 {
 	static matrix3x4 boneList[128];
@@ -401,9 +402,11 @@ void hack::drawDebug() // myStruct uberStruct
 	QAngle vec3 = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
 	QAngle vec4 = *(QAngle*)(myPlayer + m_local + m_vecPunchWeapon_AngleVel);
 
-	core->g_pSurface->DrawSetTextFont(0);
-	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
+	Vector vec6 = *(Vector*)(myPlayer + m_localOrigin);
 
+	//core->g_pSurface->DrawSetTextFont(0);
+	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
+	
 	swprintf_s(buff, L"m_vecPunchBase_Angle: x:%.2f,y:%.2f,z:%.2f", vec1.x, vec1.y, vec1.z);
 	core->g_pSurface->DrawSetTextPos(10, 200);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
@@ -428,11 +431,32 @@ void hack::drawDebug() // myStruct uberStruct
 	core->g_pSurface->DrawSetTextPos(10, 300);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 	// auto-eject: relatywnie od mojej pozycji...
+	
+	//
+
+	swprintf_s(buff, L"m_localOrigin: x:%.2f,y:%.2f,z:%.2f", vec6.x, vec6.y, vec6.z);
+	core->g_pSurface->DrawSetTextPos(10, 340);
+	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+
+	swprintf_s(buff, L"m_vecViewOffset: x:%.2f,y:%.2f,z:%.2f", *(float*)(myPlayer + m_vecViewOffset_x), *(float*)(myPlayer + m_vecViewOffset_y), *(float*)(myPlayer + m_vecViewOffset_z));
+	core->g_pSurface->DrawSetTextPos(10, 360);
+	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
 	if (NORECOIL_SWITCH && RADAR_SWITCH)
 	{
 		//drawPunchedCrosshair(vec2.x, vec2.y);
 	}
+}
+
+float* hack::getEyePosition(CBaseEntity* player)
+{
+	Vector vect1 = player->GetAbsOrigin();
+	float returnValue[3];
+	returnValue[0] = vect1.x;
+	returnValue[1] = vect1.y;
+	returnValue[2] = vect1.z + *(float*)(player + m_vecViewOffset_z);
+
+	return returnValue;
 }
 
 void hack::drawAllBones(CBaseEntity* player, int from, int to)
@@ -442,6 +466,7 @@ void hack::drawAllBones(CBaseEntity* player, int from, int to)
 	static Vector bone, boneScreen;
 	static Vector boneTop, boneBottom, screenTop, screenBottom;
 	static wchar_t buff[512];
+	static int boneSize;
 
 	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
 	{
@@ -453,8 +478,10 @@ void hack::drawAllBones(CBaseEntity* player, int from, int to)
 
 			if (w2s(bone, boneScreen) && w2s(boneTop, screenTop) && w2s(boneBottom, screenBottom))
 			{
+				boneSize = screenBottom.x - screenTop.x;
+
 				swprintf_s(buff, L"%d", i);
-				core->g_pSurface->DrawOutlineRectangle(screenTop.x - VECTOR_SIZE_ADDON, screenTop.y, screenBottom.x + VECTOR_SIZE_ADDON, screenBottom.y);
+				core->g_pSurface->DrawOutlineRectangle(screenTop.x - boneSize, screenTop.y - boneSize, screenBottom.y + boneSize, screenTop.y + boneSize);
 				core->g_pSurface->DrawSetTextColor(255, 255, 255, 255);
 				core->g_pSurface->DrawSetTextPos(boneScreen.x, boneScreen.y);
 				core->g_pSurface->DrawPrintText(buff, wcslen(buff));
@@ -480,6 +507,9 @@ void hack::drawStatLn()
 	//bool CROSSHAIR_SWITCH = 1;
 	//bool RADAR_SWITCH = 1;
 	//bool NORECOIL_SWITCH = 0;
+
+	//core->g_pSurface->DrawSetTextFont(0);
+	core->g_pSurface->DrawSetTextColor(255, 255, 255, 150);
 
 	swprintf_s(buff, L"MAIN_SWITCH: %S", MAIN_SWITCH ? "true" : "false");
 	core->g_pSurface->DrawSetTextPos(10, 10);
