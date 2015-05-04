@@ -154,10 +154,6 @@ void VectorAngles(const float *forward, float *angles)
 void __fastcall Hooked_CreateMove(void* ptr, int sequence_number, float input_sample_frametime, bool active)
 {
 	oCreateMove(ptr, sequence_number, input_sample_frametime, active);
-
-	//sprintf_s(__DEBUG_BUFF, "sequence_number: %d, input_sample_frametime: %d, active: %d", sequence_number, input_sample_frametime, active);
-	//core->debug->toFile(__DEBUG_BUFF);
-
 	if (active == 1 && MAIN_SWITCH)
 	{
 		static CInput* pInput;
@@ -307,12 +303,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			// GET CLASS / MODEL NAME??????????????????????
 			if (__DEBUG)
 			{
-				//swprintf_s(buff, L"%S", player->GetPlayerModel());
-				//core->g_pSurface->DrawSetColor(255, 255, 255, 255);
-				//core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 30);
-				//core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 			}
-
 			// GET CLASS / MODEL NAME??????????????????????
 			core->g_pEngine->GetPlayerInfo(i, &pInfo);
 			if (strlen(pInfo.szName) < 6)
@@ -349,27 +340,6 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 				{
 					static float aimAngle[3], enemyHeadPosition[3];
 					static float* myHeadPosition;
-					/*
-					//myHack->getBonePos(myPlayer, 10, myHeadPosition);
-					myHack->getHead(myPlayer, myHeadPosition);
-					myHack->getHead(player, enemyHeadPosition);
-
-					CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
-
-					enemyHeadPosition[1] += 3;
-
-					TargetList[targetLoop] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
-					
-					if (__DEBUG)
-					{
-						swprintf_s(buff, L"%.2f", TargetList[targetLoop].distance2D);
-						core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-						core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-					}
-
-					targetLoop++;
-					*/
-
 					//myHack->getBonePos(myPlayer, 7, myHeadPosition);
 					myHeadPosition = myHack->getEyePosition(myPlayer);
 					//myHack->getHead(myPlayer, myHeadPosition);
@@ -441,21 +411,6 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			{
 				myHack->drawStatLn();
 				myHack->drawDebug();
-
-				/*
-				Trace trc;
-
-				traceLine(myPlayer->GetAbsOrigin(), player->GetAbsOrigin(), 0x4600400B, myPlayer, 0, 0, &trc); // ..3?
-
-				if (trc.fraction == 1.0f)
-				{
-					static wchar_t buff[512];
-
-					swprintf_s(buff, L"visible");
-					core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-					core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-				}
-				*/
 			}
 		}
 
@@ -470,24 +425,10 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 			std::sort(cpyOfTrgtLst2D, TargetList + targetLoop, CompareTargetEnArray2D());
 			std::sort(cpyOfTrgtLst3D, TargetList + targetLoop, CompareTargetEnArray3D());
 
-			if (((
-				cpyOfTrgtLst2D[0].distance2D < MAX_AIM_DISTANCE
-				//|| cpyOfTrgtLst3D[0].distance3D < MAX_3D_DISTANCE
-				)
-				//&& cpyOfTrgtLst2D[0].distance2D < MIN_AIM_DISTANCE
-				)
-				//|| cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE
-				)
+			if (cpyOfTrgtLst2D[0].distance2D < MAX_AIM_DISTANCE)
 			{
 				aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
 				aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
-				/*
-				if (cpyOfTrgtLst3D[0].distance3D < MAX_3D_DISTANCE)
-				{
-					aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
-					aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
-				}
-				*/
 				aimAt[2] = 1;
 			}
 			else
