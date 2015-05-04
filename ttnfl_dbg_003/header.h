@@ -4,6 +4,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
+#define M_RADPI 57.295779513082
 #include "vmth64.h"
 #include "hack.h"
 #include "CoreHaxFunc.h"
