@@ -9,6 +9,7 @@
 #include "hack.h"
 #include "CoreHaxFunc.h"
 #include "HackMechanics.h"
+#include "ExtendedPlayerClass.h"
 
 extern tPaintTraverse oPaintTraverse;
 extern tCreateMove oCreateMove;
@@ -36,7 +37,7 @@ for linker errors:
 */
 
 
-struct hckStruct_t {
+typedef struct hckStruct_t{
 	float aimAt[3];
 
 	void fillData()
@@ -48,7 +49,7 @@ struct hckStruct_t {
 
 
 
-struct pointAt_t {
+typedef struct pointAt_t{
 	float pointaAt[3];
 	float aimAt[3];
 	float distanceAtIt;
@@ -77,3 +78,64 @@ struct pointAt_t {
 } pointAtStruct;
 
 
+
+typedef struct TargetList_t
+{
+	float distance3D;
+	float distance2D;
+	float AimbotAngle[3];
+	//float oEnemyCoords[3];
+	//float oMyCoords[3];
+
+	TargetList_t()
+	{
+	}
+
+	TargetList_t(float aimbotAngle[], float myCoords[], float enemyCoords[])
+	{
+		//oEnemyCoords = enemyCoords;
+		//oMyCoords = myCoords;
+
+		AimbotAngle[0] = aimbotAngle[0];
+		AimbotAngle[1] = aimbotAngle[1];
+		AimbotAngle[2] = aimbotAngle[2];
+
+		distance3D = Get3dDistance(myCoords[0], myCoords[1], myCoords[2], enemyCoords[0], enemyCoords[1], enemyCoords[2]);
+		distance2D = Get2dDistance();
+	}
+
+	float Get3dDistance(float myCoordsX, float myCoordsZ, float myCoordsY,
+		float eNx, float eNz, float eNy)
+	{
+		return (float)sqrt(
+			pow(double(eNx - myCoordsX), 2.0) +
+			pow(double(eNy - myCoordsY), 2.0) +
+			pow(double(eNz - myCoordsZ), 2.0));
+	}
+
+	float Get2dDistance()
+	{
+		return sqrt(
+			pow(double(AimbotAngle[0] - uberStruct.viewAngles.x), 2.0) +
+			pow(double(AimbotAngle[1] - uberStruct.viewAngles.y), 2.0));
+	}
+};
+
+
+
+
+typedef struct CompareTargetEnArray2D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	{
+		return lhs.distance2D < rhs.distance2D;
+	}
+};
+
+typedef struct CompareTargetEnArray3D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	{
+		return lhs.distance3D < rhs.distance3D;
+	}
+};

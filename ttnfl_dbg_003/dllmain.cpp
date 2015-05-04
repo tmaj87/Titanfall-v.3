@@ -6,6 +6,7 @@ cvmth64* VMThook;
 cvmth64* VMThook2;
 base* core;
 hack* myHack;
+HackMechanics* hackEngine;
 
 bool __DEBUG = 0;
 char __DEBUG_BUFF[512];
@@ -15,20 +16,24 @@ bool CROSSHAIR_SWITCH = 1;
 bool RADAR_SWITCH = 1;
 bool NORECOIL_SWITCH = 1;
 
+const byte PT_OFFSET = 46;
+const byte CM_OFFSET = 24;
+
 void DoMeAFavour()
 {
 	VMThook = new cvmth64();
 	VMThook2 = new cvmth64();
 
 	core = new base();
+	hackEngine = new HackMechanics();
 	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
 	{
-		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, 46);
+		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, PT_OFFSET);
 		myHack = new hack();
 
 		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
 		{
-			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::Hooked_CreateMove, 24);
+			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::Hooked_CreateMove, CM_OFFSET);
 		}
 	}
 	else
