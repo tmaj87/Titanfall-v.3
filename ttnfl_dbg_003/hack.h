@@ -2,10 +2,6 @@
 #include "sdk.h"
 #include "debug.h"
 
-#ifndef SHOW_DEBUG
-	#define SHOW_DEBUG 1
-#endif
-
 class base
 {
 public:

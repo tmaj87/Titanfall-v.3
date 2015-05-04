@@ -54,7 +54,7 @@ void base::initFaces()
 	g_pClient = (IBaseClientDLL*)g_ClientFactory("VClient018", NULL);
 	Plat_FloatTime = (tPlat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
 
-	if (SHOW_DEBUG)
+	if (0) // __DEBUG
 	{
 		char buff[64] = { 0 };
 		sprintf_s(buff, "engineTrace: %p\n", engineTrace);
@@ -341,62 +341,9 @@ void hack::drawPunchedCrosshair(float vecPunchX, float vecPunchY)
 	core->g_pSurface->DrawLine(screenPosX, screenPosY + 4, screenPosX, screenPosY - 4);
 }
 
-bool hack::traceray(CBaseEntity* me, CBaseEntity* you)
-{
-	/*
-	Ray_t ray;
-	trace_t tr;
-	
-	ray.Init(me->GetAbsOrigin(), you->GetAbsOrigin());
-
-	core->engineTrace->TraceRay(ray, 0x4600400B, NULL, &tr);
-
-	if (tr.m_pEnt == you && tr.fractionleftsolid == 1.0f)
-	{
-		return 1;
-	}
-	return 0;
-	*/
-
-	/*
-	trace_t tr;
-	Ray_t ray;
-
-	CTraceFilter traceFilter(me);
-
-	ray.Init(me->GetAbsOrigin(), you->GetAbsOrigin());
-
-	core->engineTrace->TraceRay(ray, 0x46004003, &traceFilter, &tr);
-
-	if (you && tr.m_pEnt)
-	{
-		return(tr.m_pEnt == you || tr.fraction >= 1.0f);
-	}
-	*/
-}
-
-void hack::drawDebug() // myStruct uberStruct
+void hack::drawDebug()
 {
 	static wchar_t buff[512];
-	/*
-	if (myHack->traceray(myPlayer, player) && i < 32)
-	{
-	swprintf_s(buff, L"visible");
-	core->g_pSurface->DrawSetTextFont(0);
-	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
-	core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-	}
-	*/
-
-	/*
-	swprintf_s(buff, L"index(9):%d  dormant(8):%d", player->GetIndex(), player->IsDormant());
-	core->g_pSurface->DrawSetTextFont(0);
-	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
-	core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-	*/
-
 	QAngle vec1 = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_Angle);
 	QAngle vec2 = *(QAngle*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
 	QAngle vec3 = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
@@ -502,11 +449,6 @@ void hack::drawStat()
 void hack::drawStatLn()
 {
 	static wchar_t buff[512];
-
-	//bool MAIN_SWITCH = 0;
-	//bool CROSSHAIR_SWITCH = 1;
-	//bool RADAR_SWITCH = 1;
-	//bool NORECOIL_SWITCH = 0;
 
 	//core->g_pSurface->DrawSetTextFont(0);
 	core->g_pSurface->DrawSetTextColor(255, 255, 255, 150);
