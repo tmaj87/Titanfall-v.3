@@ -449,7 +449,27 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 }
 
 
+void DoMeAFavour()
+{
+	VMThook = new cvmth64();
+	VMThook2 = new cvmth64();
 
+	core = new base();
+	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
+	{
+		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)pt, 46);
+		myHack = new hack();
+
+		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
+		{
+			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)Hooked_CreateMove, 24);
+		}
+	}
+	else
+	{
+		MessageBox(NULL, "error", "", MB_OK);
+	}
+}
 
 
 
@@ -459,7 +479,7 @@ BOOL APIENTRY DllMain(HMODULE handle, DWORD  reason, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(handle);
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)CoreHaxFunc::DoMeAFavour(), NULL, 0, NULL);
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)DoMeAFavour, NULL, 0, NULL);
 		break;
 	}
 	return 1;

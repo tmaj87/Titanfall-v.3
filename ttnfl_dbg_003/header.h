@@ -7,6 +7,7 @@
 #include "vmth64.h"
 #include "hack.h"
 #include "CoreHaxFunc.h"
+#include "HackMechanics.h"
 
 extern tPaintTraverse oPaintTraverse;
 extern tCreateMove oCreateMove;

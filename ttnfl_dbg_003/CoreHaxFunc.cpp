@@ -1,39 +1,5 @@
 #include "header.h"
 
-CoreHaxFunc::CoreHaxFunc()
-{
-}
-
-
-CoreHaxFunc::~CoreHaxFunc()
-{
-}
-
-
-
-void CoreHaxFunc::DoMeAFavour()
-{
-	VMThook = new cvmth64();
-	VMThook2 = new cvmth64();
-
-	core = new base();
-	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
-	{
-		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)pt, 46);
-		myHack = new hack();
-
-		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
-		{
-			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)Hooked_CreateMove, 24);
-		}
-	}
-	else
-	{
-		MessageBox(NULL, "error", "", MB_OK);
-	}
-}
-
-
 void CoreHaxFunc::keyManager()
 {
 	const byte MAIN_SWITCH_KEY = VK_F5;
