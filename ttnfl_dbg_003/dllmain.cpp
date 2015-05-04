@@ -217,7 +217,7 @@ void __fastcall pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAl
 		}
 	}
 
-	keyManager();
+	CoreHaxFunc::keyManager();
 
 	if (vguiPanel == mstp)
 	{

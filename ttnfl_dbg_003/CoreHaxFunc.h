@@ -5,5 +5,6 @@ public:
 	CoreHaxFunc();
 	~CoreHaxFunc();
 	static void DoMeAFavour();
+	static void keyManager();
 };
 
