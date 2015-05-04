@@ -1,7 +1,5 @@
 #include "header.h"
 
-
-
 void CoreHaxFunc::keyManager()
 {
 	const byte MAIN_SWITCH_KEY = VK_F5;

@@ -9,6 +9,7 @@
 #include "hack.h"
 #include "CoreHaxFunc.h"
 #include "HackMechanics.h"
+#include "ExtendedPlayerClass.h"
 
 extern tPaintTraverse oPaintTraverse;
 extern tCreateMove oCreateMove;
@@ -106,7 +107,7 @@ typedef struct TargetList_t
 	float Get3dDistance(float myCoordsX, float myCoordsZ, float myCoordsY,
 		float eNx, float eNz, float eNy)
 	{
-		return sqrt(
+		return (float)sqrt(
 			pow(double(eNx - myCoordsX), 2.0) +
 			pow(double(eNy - myCoordsY), 2.0) +
 			pow(double(eNz - myCoordsZ), 2.0));
