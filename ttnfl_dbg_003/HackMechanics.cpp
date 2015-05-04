@@ -35,7 +35,6 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 	if (active == 1 && MAIN_SWITCH)
 	{
 		static CInput* pInput;
-		static QAngle;
 
 		int static once = 0;
 		if (!once)
@@ -142,7 +141,7 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 	static float distFromMe;
 	static byte type, isEnemy, a;
 
-	if (!isCorrectPanel() && !isAboutMeAvailable())
+	if (!isCorrectPanel() || !isAboutMeAvailable())
 	{
 		return;
 	}
@@ -213,14 +212,13 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 			a = 0;
 		}
 
+		// get player type
 		type = 1;
 		core->g_pEngine->GetPlayerInfo(i, &pInfo);
 		if (strlen(pInfo.szName) < 6)
 		{
 			type = 3;
 		}
-
-		// get player type
 		if (*(int*)(DWORD64(player) + m_iHealth) > 700)
 		{
 			type = 2;

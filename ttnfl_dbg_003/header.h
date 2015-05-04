@@ -79,7 +79,7 @@ typedef struct pointAt_t{
 
 
 
-typedef struct TargetList_t
+struct TargetList_t
 {
 	float distance3D;
 	float distance2D;
@@ -115,7 +115,7 @@ typedef struct TargetList_t
 
 	float Get2dDistance()
 	{
-		return sqrt(
+		return (float)sqrt(
 			pow(double(AimbotAngle[0] - uberStruct.viewAngles.x), 2.0) +
 			pow(double(AimbotAngle[1] - uberStruct.viewAngles.y), 2.0));
 	}
@@ -124,7 +124,7 @@ typedef struct TargetList_t
 
 
 
-typedef struct CompareTargetEnArray2D
+struct CompareTargetEnArray2D
 {
 	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
 	{
@@ -132,7 +132,7 @@ typedef struct CompareTargetEnArray2D
 	}
 };
 
-typedef struct CompareTargetEnArray3D
+struct CompareTargetEnArray3D
 {
 	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
 	{

@@ -25,7 +25,6 @@ void DoMeAFavour()
 	VMThook2 = new cvmth64();
 
 	core = new base();
-	hackEngine = new HackMechanics();
 	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
 	{
 		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, PT_OFFSET);
