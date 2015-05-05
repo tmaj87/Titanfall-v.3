@@ -54,18 +54,17 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 			if (pCmd)
 			{
 				uberStruct.viewAngles = pCmd->viewangles;
-				if (NORECOIL_SWITCH && aimAt[2] && GetAsyncKeyState(VK_MENU) & 0x8000)
+				if (NORECOIL_SWITCH && aimAt[2] && GetAsyncKeyState(VK_MENU) & 0x8000) // AIMBOT_KEY
 				{
 					// buffered aim
 					// http://www.unknowncheats.me/forum/counterstrike-global-offensive/137492-math-behind-hack-1-coding-better-aimbot-stop-using-calcangle.html
-					static float smoothAim[2];
-					smoothAim[0] = aimAt[0] - pCmd->viewangles.x;
-					smoothAim[1] = aimAt[1] - pCmd->viewangles.y;
+					uberStruct.bufferedAngles.x = aimAt[0] - pCmd->viewangles.x;
+					uberStruct.bufferedAngles.y = aimAt[1] - pCmd->viewangles.y;
 					//
 					static int divideBy = 4;
 					//
-					pCmd->viewangles.x += smoothAim[0] / divideBy;
-					pCmd->viewangles.y += smoothAim[1] / divideBy;
+					pCmd->viewangles.x += uberStruct.bufferedAngles.x / divideBy;
+					pCmd->viewangles.y += uberStruct.bufferedAngles.y / divideBy;
 				}
 
 			}

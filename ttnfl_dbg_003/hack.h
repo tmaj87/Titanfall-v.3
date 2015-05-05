@@ -71,6 +71,8 @@ public:
 
 struct myStruct {
 	QAngle viewAngles;
+	QAngle prefferedAimAngles;
+	QAngle bufferedAngles;
 };
 
 extern tPlat_FloatTime Plat_FloatTime;

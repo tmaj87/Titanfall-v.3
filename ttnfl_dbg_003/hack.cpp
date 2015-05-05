@@ -322,77 +322,19 @@ void hack::drawOnRadar(Vector& screenPos)
 	core->g_pSurface->DrawLine(w / 2, h - 50, x2, y2 - 50);
 }
 
-void hack::drawPunchedCrosshair(float vecPunchX, float vecPunchY)
-{
-	static int screenWidth, screenHeight;
-	core->g_pEngine->GetScreenSize(screenWidth, screenHeight);
-
-	static float punchX, punchY, screenPosX, screenPosY;
-	screenPosX = screenWidth / 2;
-	screenPosY = screenHeight / 2;
-
-	punchX = (screenWidth / 358.f) * (vecPunchX * 2);
-	punchY = (screenHeight / 178.f) * (vecPunchY * 2);
-	screenPosX -= punchY;
-	screenPosY += punchX;
-
-	// core->g_pSurface->DrawSetColor(255, 255, 0, 190);
-	core->g_pSurface->DrawLine(screenPosX - 4, screenPosY, screenPosX + 4, screenPosY);
-	core->g_pSurface->DrawLine(screenPosX, screenPosY + 4, screenPosX, screenPosY - 4);
-}
-
 void hack::drawDebug()
 {
 	static wchar_t buff[512];
-	QAngle vec1 = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_Angle);
-	QAngle vec2 = *(QAngle*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
-	QAngle vec3 = *(QAngle*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
-	QAngle vec4 = *(QAngle*)(myPlayer + m_local + m_vecPunchWeapon_AngleVel);
 
-	Vector vec6 = *(Vector*)(myPlayer + m_localOrigin);
-
-	//core->g_pSurface->DrawSetTextFont(0);
 	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
 	
-	swprintf_s(buff, L"m_vecPunchBase_Angle: x:%.2f,y:%.2f,z:%.2f", vec1.x, vec1.y, vec1.z);
+	swprintf_s(buff, L"uberStruct.bufferedAngles.y: x:%.2f,y:%.2f", uberStruct.bufferedAngles.x, uberStruct.bufferedAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 200);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	swprintf_s(buff, L"m_vecPunchBase_AngleVel: x:%.2f,y:%.2f,z:%.2f", vec3.x, vec3.y, vec3.z);
+	swprintf_s(buff, L"uberStruct.viewAngles.x: x:%.2f,y:%.2f", uberStruct.viewAngles.x, uberStruct.viewAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 220);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"m_vecPunchWeapon_Angle: x:%.2f,y:%.2f,z:%.2f", vec2.x, vec2.y, vec2.z);
-	core->g_pSurface->DrawSetTextPos(10, 240);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"m_vecPunchWeapon_AngleVel: x:%.2f,y:%.2f,z:%.2f", vec4.x, vec4.y, vec4.z);
-	core->g_pSurface->DrawSetTextPos(10, 260);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"viewAngles: x:%.2f,y:%.2f,z:%.2f", uberStruct.viewAngles.x, uberStruct.viewAngles.y, uberStruct.viewAngles.z);
-	core->g_pSurface->DrawSetTextPos(10, 280);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"aimAt: x:%.2f,y:%.2f,z:%.2f", aimAt[0], aimAt[1], aimAt[2]);
-	core->g_pSurface->DrawSetTextPos(10, 300);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-	// auto-eject: relatywnie od mojej pozycji...
-	
-	//
-
-	swprintf_s(buff, L"m_localOrigin: x:%.2f,y:%.2f,z:%.2f", vec6.x, vec6.y, vec6.z);
-	core->g_pSurface->DrawSetTextPos(10, 340);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"m_vecViewOffset: x:%.2f,y:%.2f,z:%.2f", *(float*)(myPlayer + m_vecViewOffset_x), *(float*)(myPlayer + m_vecViewOffset_y), *(float*)(myPlayer + m_vecViewOffset_z));
-	core->g_pSurface->DrawSetTextPos(10, 360);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	if (NORECOIL_SWITCH && RADAR_SWITCH)
-	{
-		//drawPunchedCrosshair(vec2.x, vec2.y);
-	}
 }
 
 float* hack::getEyePosition(CBaseEntity* player)
