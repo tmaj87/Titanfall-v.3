@@ -328,6 +328,7 @@ void hack::drawDebug()
 
 	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
 	
+	/*
 	swprintf_s(buff, L"uberStruct.bufferedAngles.y: x:%.2f,y:%.2f", uberStruct.bufferedAngles.x, uberStruct.bufferedAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 200);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
@@ -335,6 +336,7 @@ void hack::drawDebug()
 	swprintf_s(buff, L"uberStruct.viewAngles.x: x:%.2f,y:%.2f", uberStruct.viewAngles.x, uberStruct.viewAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 220);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+	*/
 }
 
 float* hack::getEyePosition(CBaseEntity* player)

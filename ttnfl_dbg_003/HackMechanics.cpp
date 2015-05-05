@@ -39,11 +39,9 @@ void HackMechanics::playersLoop()
 	// 
 	// aim part
 	//
-	int targetLoop = 0;
+	int targetCursor = 0;
 	static int TARGET_ARRAY_SIZE = 32;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
-
-	int targetCursor = 0;
 
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
@@ -133,33 +131,41 @@ void HackMechanics::playersLoop()
 		// aimbot &...
 		if (isEnemy)
 		{
-			static float aimAngle[3], enemyHeadPosition[3], vectorAngle[3];
-			static float* myHeadPosition;
+			static float aimAngle[3], enemyAimPosition[3], vectorAngle[3];
+			static float* myEyes;
+			static float* deltaVector;
 
-			myHeadPosition = myHack->getEyePosition(myPlayer);
-			myHack->getBonePos(player, 7, enemyHeadPosition);
+			myEyes = myHack->getEyePosition(myPlayer);
+			//myHack->getBonePos(player, 10, enemyAimPosition);
+			myHack->getHead(player, enemyAimPosition);
 
-			Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
+			// Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
 
-			CoreHaxFunc::CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
+			// CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
+			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
+			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
+			deltaVector[2] = enemyAimPosition[2] - myEyes[2];
 
-			CoreHaxFunc::VectorAngles(enemyHeadPosition, vectorAngle);
+			CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
 
-			myEnemiesList[targetCursor] = TargetList_t(aimAngle, myHeadPosition, enemyHeadPosition);
+			myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition); // aimAngle
 
 			if (__DEBUG)
 			{
-				swprintf_s(__DEBUG_BUFF_W, L"%.1f %.1f", myEnemiesList[targetCursor].distance2D, myEnemiesList[targetCursor].distance3D);
+				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance2D);
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 
+				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance3D);
+				core->g_pSurface->DrawSetTextPos(screenPos.x + 20, screenPos.y);
+				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 				/*
-				swprintf_s(__DEBUG_BUFF_W, L"%.1f %.1f", vectorAngle[0], vectorAngle[1]);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 12);
+				swprintf_s(__DEBUG_BUFF_W, L"vectorAngle:%.0f, %.0f", vectorAngle[0], vectorAngle[1]);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 
-				swprintf_s(__DEBUG_BUFF_W, L"%.1f %.1f", aimAngle[0], aimAngle[1]);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 24);
+				swprintf_s(__DEBUG_BUFF_W, L"aimAngle:%.0f, %.0f", aimAngle[0], aimAngle[1]);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 				*/
 			}
@@ -170,35 +176,30 @@ void HackMechanics::playersLoop()
 
 	// aimbot..!
 	TargetList_t *cpyOfTrgtLst3D, *cpyOfTrgtLst2D;
-	if (targetLoop > 0)
+	if (targetCursor > 0)
 	{
 		cpyOfTrgtLst3D = myEnemiesList;
 		cpyOfTrgtLst2D = myEnemiesList;
-		std::sort(cpyOfTrgtLst2D, myEnemiesList + targetLoop, CompareTargetEnArray2D());
-		std::sort(cpyOfTrgtLst3D, myEnemiesList + targetLoop, CompareTargetEnArray3D());
 
-		if (
-			cpyOfTrgtLst2D[0].distance2D < MAX_AIM_DISTANCE
-			|| cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE
-			)
-		{
-			uberStruct.aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
-			uberStruct.aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
-			if (cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE)
-			{
-				uberStruct.aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
-				uberStruct.aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
-			}
+		std::sort(cpyOfTrgtLst2D, myEnemiesList + targetCursor, CompareTargetEnArray2D());
+		std::sort(cpyOfTrgtLst3D, myEnemiesList + targetCursor, CompareTargetEnArray3D());
 
-			uberStruct.aimAt[2] = 1;
-		}
-		else
+		uberStruct.aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
+		uberStruct.aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
+
+		if (cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE)
 		{
-			uberStruct.aimAt[2] = 0;
+			uberStruct.aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
+			uberStruct.aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
 		}
+		uberStruct.aimAt[2] = 1;
+	}
+	else
+	{
+		uberStruct.aimAt[2] = 0;
 	}
 
-	targetLoop = 0;
+	targetCursor = 0;
 	delete[] myEnemiesList;
 }
 
