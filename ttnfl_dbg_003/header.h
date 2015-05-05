@@ -36,7 +36,7 @@ typedef struct _PEB_LDR_DATA {
 struct TargetList_t
 {
 	float distance3D;
-	float distance2D;
+	float crosshairDistance;
 	float AimbotAngle[3];
 
 	TargetList_t()
@@ -50,7 +50,6 @@ struct TargetList_t
 		AimbotAngle[2] = aimbotAngle[2];
 
 		distance3D = Get3dDistance(myCoords[0], myCoords[1], myCoords[2], enemyCoords[0], enemyCoords[1], enemyCoords[2]);
-		distance2D = Get2dDistance();
 	}
 
 	float Get3dDistance(float myCoordsX, float myCoordsZ, float myCoordsY,
@@ -62,19 +61,9 @@ struct TargetList_t
 			pow(double(eNz - myCoordsZ), 2.0));
 	}
 
-	float Get2dDistance()
+	void fill2Ddistance(float distance)
 	{
-		return (float)sqrt(
-			pow(double(AimbotAngle[0] - uberStruct.viewAngles.x), 2.0) +
-			pow(double(AimbotAngle[1] - uberStruct.viewAngles.y), 2.0));
-	}
-};
-
-struct CompareTargetEnArray2D
-{
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
-	{
-		return lhs.distance2D < rhs.distance2D;
+		crosshairDistance = distance;
 	}
 };
 
@@ -83,5 +72,13 @@ struct CompareTargetEnArray3D
 	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
 	{
 		return lhs.distance3D < rhs.distance3D;
+	}
+};
+
+struct CompareTargetEnArray2D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	{
+		return lhs.crosshairDistance < rhs.crosshairDistance;
 	}
 };

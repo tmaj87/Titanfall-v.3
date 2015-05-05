@@ -5,7 +5,7 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_MENU;
-const float __AIMBOT_DIVIDE_BY = 1.7;
+const float __AIMBOT_DIVIDE_BY = 3.1;
 
 float const MAX_AIM_DISTANCE = 8;
 // float const MIN_AIM_DISTANCE = 30;
@@ -28,7 +28,7 @@ void HackMechanics::aimAtThisPlayer(CBaseEntity* player)
 	//
 }
 
-void HackMechanics::playersLoop()
+void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
 	static CBaseEntity* player;
 	static Vector playerPos, screenPos;
@@ -37,7 +37,7 @@ void HackMechanics::playersLoop()
 	static byte type, isEnemy, a;
  
 	// aim part
-	static float aimAngle[3], enemyAimPosition[3], vectorAngle[3], deltaVector[3], myEyes[3];
+	static float aimAngle[3], enemyAimPosition[3], vectorAngle[3], deltaVector[3], myEyes[3], aimAngleV2[3];
 	int targetCursor = 0;
 	static int TARGET_ARRAY_SIZE = 32;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
@@ -137,6 +137,7 @@ void HackMechanics::playersLoop()
 			// Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
 
 			CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
+			CoreHaxFunc::CalcAngleV2(myEyes, enemyAimPosition, aimAngleV2);
 			
 			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
@@ -144,6 +145,15 @@ void HackMechanics::playersLoop()
 			CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
 
 			myEnemiesList[targetCursor] = TargetList_t(aimAngle, myEyes, enemyAimPosition);
+
+			// ..!
+			static int w, h;
+			core->g_pIPanel->GetSize(vguiPanel, w, h);
+			myEnemiesList[targetCursor].fill2Ddistance(
+				sqrt(
+				pow(double(w / 2 - screenPos.x), 2.0) +
+				pow(double(h / 2 - screenPos.y), 2.0)
+				));
 
 			if (__DEBUG)
 			{
@@ -171,23 +181,11 @@ void HackMechanics::playersLoop()
 	}
 
 	// aimbot..!
-	TargetList_t *cpyOfTrgtLst3D, *cpyOfTrgtLst2D;
 	if (targetCursor > 0)
 	{
-		cpyOfTrgtLst3D = myEnemiesList;
-		cpyOfTrgtLst2D = myEnemiesList;
-
-		std::sort(cpyOfTrgtLst2D, myEnemiesList + targetCursor, CompareTargetEnArray2D());
-		std::sort(cpyOfTrgtLst3D, myEnemiesList + targetCursor, CompareTargetEnArray3D());
-
-		uberStruct.aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
-		uberStruct.aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
-
-		if (cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE)
-		{
-			uberStruct.aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
-			uberStruct.aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
-		}
+		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D()); // 2D..!
+		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
+		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
 		uberStruct.aimAt[2] = 1;
 	}
 	else
@@ -306,7 +304,7 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 		myHack->inTheMiddle(vguiPanel);
 	}
 
-	playersLoop();
+	playersLoop(vguiPanel);
 }
 
 void HackMechanics::drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)

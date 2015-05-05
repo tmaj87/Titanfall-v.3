@@ -17,6 +17,6 @@ private:
 	static bool isAboutMeAvailable();
 	static bool isCorrectPanel(IPanel* pThis, VPANEL vguiPanel);
 	static void drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
-	static void playersLoop();
+	static void playersLoop(VPANEL vguiPanel);
 };
 
