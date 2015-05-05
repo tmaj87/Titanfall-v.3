@@ -7,13 +7,11 @@ float aimAt[3] = { 0, 0, 0 };
 float bufferedAim[3] = { 0, 0, 0 };
 
 float const MAX_AIM_DISTANCE = 8;
-float const MIN_AIM_DISTANCE = 30;
-float const CRITICAL_3D_DISTANCE = 150;
-float const MAX_3D_DISTANCE = 500;
+// float const MIN_AIM_DISTANCE = 30;
+float const CRITICAL_3D_DISTANCE = 200;
+// float const MAX_3D_DISTANCE = 500;
 
 VPANEL HackMechanics::mstp;
-IPanel* HackMechanics::g_pThis;
-VPANEL HackMechanics::g_vguiPanel;
 
 HackMechanics::HackMechanics()
 {
@@ -60,8 +58,14 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				{
 					// buffered aim
 					// http://www.unknowncheats.me/forum/counterstrike-global-offensive/137492-math-behind-hack-1-coding-better-aimbot-stop-using-calcangle.html
-					pCmd->viewangles.x = aimAt[0];
-					pCmd->viewangles.y = aimAt[1];
+					static float smoothAim[2];
+					smoothAim[0] = aimAt[0] - pCmd->viewangles.x;
+					smoothAim[1] = aimAt[1] - pCmd->viewangles.y;
+					//
+					static int divideBy = 4;
+					//
+					pCmd->viewangles.x += smoothAim[0] / divideBy;
+					pCmd->viewangles.y += smoothAim[1] / divideBy;
 				}
 
 			}
@@ -84,52 +88,29 @@ bool HackMechanics::isAboutMeAvailable()
 	return true;
 }
 
-void HackMechanics::initPanel()
+void HackMechanics::initPanel(IPanel* pThis, VPANEL vguiPanel)
 {
-	if (!strcmp(g_pThis->GetName(g_vguiPanel), "MatSystemTopPanel") && g_pThis->GetParent(g_vguiPanel) == 0)
+	if (!strcmp(pThis->GetName(vguiPanel), "MatSystemTopPanel") && pThis->GetParent(vguiPanel) == 0)
 	{
-		mstp = g_vguiPanel;
+		mstp = vguiPanel;
 	}
 }
 
-bool HackMechanics::isCorrectPanel()
+
+bool HackMechanics::isCorrectPanel(IPanel* pThis, VPANEL vguiPanel)
 {
 	if (mstp == NULL)
 	{
-		initPanel();
+		initPanel(pThis, vguiPanel);
 	}
 
-	if (g_vguiPanel == mstp)
+	if (vguiPanel == mstp)
 	{
 		return true;
 	}
 	return false;
 }
 
-void HackMechanics::drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)
-{
-	switch (type)
-	{
-	case 1: // player
-		myHack->drawPlayer(player, distFromMe, isEnemy);
-		break;
-	case 2: // titan
-		if (isEnemy)
-		{
-			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
-		}
-		myHack->drawTitan(player, distFromMe, isEnemy);
-		break;
-	case 3: // minon
-		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
-		{
-			return;
-		}
-		core->g_pSurface->DrawSetColor(255, 255, 0, alpha);
-		myHack->drawMinion(player, distFromMe, isEnemy);
-		break;
-	}
-}
 
 void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAllowForce)
 {
@@ -141,12 +122,12 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 	static float distFromMe;
 	static byte type, isEnemy, a;
 
-	if (!isCorrectPanel() || !isAboutMeAvailable())
+	if (!isCorrectPanel(pThis, vguiPanel) || !isAboutMeAvailable())
 	{
 		return;
 	}
 
-	return;
+	CoreHaxFunc::keyManager();
 
 	if (!MAIN_SWITCH)
 	{
@@ -158,11 +139,9 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 		return;
 	}
 
-	CoreHaxFunc::keyManager();
-
 	if (CROSSHAIR_SWITCH)
 	{
-		myHack->inTheMiddle(g_vguiPanel);
+		myHack->inTheMiddle(vguiPanel);
 	}
 
 	// 
@@ -170,6 +149,7 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 	//
 	int targetLoop = 0;
 	TargetList_t* TargetList = new TargetList_t[32];
+
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 	{
@@ -186,12 +166,14 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 			continue;
 		}
 
+
 		static bool matrixCached = 0;
 		if (!matrixCached)
 		{
 			myHack->getMatrix(); // magic!!
 			matrixCached = 1;
 		}
+
 
 		playerPos = player->GetAbsOrigin();
 		if (!myHack->w2s(playerPos, screenPos))
@@ -264,10 +246,6 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 
 			Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
 
-			enemyHeadPosition[0] -= punchVec[0];
-			enemyHeadPosition[1] -= punchVec[1];
-			enemyHeadPosition[2] -= punchVec[2];
-
 			CoreHaxFunc::CalcAngle(myHeadPosition, enemyHeadPosition, aimAngle);
 			//VectorAngles(myHeadPosition, enemyHeadPosition);
 
@@ -288,10 +266,19 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 		std::sort(cpyOfTrgtLst2D, TargetList + targetLoop, CompareTargetEnArray2D());
 		std::sort(cpyOfTrgtLst3D, TargetList + targetLoop, CompareTargetEnArray3D());
 
-		if (cpyOfTrgtLst2D[0].distance2D < 60)
+		if (
+				cpyOfTrgtLst2D[0].distance2D < MAX_AIM_DISTANCE
+				|| cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE
+			)
 		{
 			aimAt[0] = cpyOfTrgtLst2D[0].AimbotAngle[0];
 			aimAt[1] = cpyOfTrgtLst2D[0].AimbotAngle[1];
+			if (cpyOfTrgtLst3D[0].distance3D < CRITICAL_3D_DISTANCE)
+			{
+				aimAt[0] = cpyOfTrgtLst3D[0].AimbotAngle[0];
+				aimAt[1] = cpyOfTrgtLst3D[0].AimbotAngle[1];
+			}
+
 			aimAt[2] = 1;
 		}
 		else
@@ -302,4 +289,29 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 
 	targetLoop = 0;
 	delete[] TargetList;
+}
+
+void HackMechanics::drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)
+{
+	switch (type)
+	{
+	case 1: // player
+		myHack->drawPlayer(player, distFromMe, isEnemy);
+		break;
+	case 2: // titan
+		if (isEnemy)
+		{
+			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
+		}
+		myHack->drawTitan(player, distFromMe, isEnemy);
+		break;
+	case 3: // minon
+		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
+		{
+			return;
+		}
+		core->g_pSurface->DrawSetColor(255, 255, 0, alpha);
+		myHack->drawMinion(player, distFromMe, isEnemy);
+		break;
+	}
 }

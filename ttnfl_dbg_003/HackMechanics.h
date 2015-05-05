@@ -21,11 +21,9 @@ public:
 	void aimAtThisPlayer(CBaseEntity* player);
 private:
 	static VPANEL mstp;
-	static IPanel* g_pThis;
-	static VPANEL g_vguiPanel;
-	static void initPanel();
+	static void initPanel(IPanel* pThis, VPANEL vguiPanel);
 	static bool isAboutMeAvailable();
-	static bool isCorrectPanel();
+	static bool isCorrectPanel(IPanel* pThis, VPANEL vguiPanel);
 	static void drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
 };
 
