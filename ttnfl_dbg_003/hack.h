@@ -66,7 +66,7 @@ public:
 	void getBonePos(CBaseEntity*, int, float*);
 	void drawAllBones(CBaseEntity*, int, int);
 	void drawCrossAt(int, int);
-	float* getEyePosition(CBaseEntity*);
+	void getEyePosition(CBaseEntity* player, float* returnAngles);
 };
 
 struct myStruct {

@@ -339,15 +339,13 @@ void hack::drawDebug()
 	*/
 }
 
-float* hack::getEyePosition(CBaseEntity* player)
+void hack::getEyePosition(CBaseEntity* player, float* returnAngles)
 {
 	Vector vect1 = player->GetAbsOrigin();
-	float returnValue[3];
-	returnValue[0] = vect1.x;
-	returnValue[1] = vect1.y;
-	returnValue[2] = vect1.z + *(float*)(player + m_vecViewOffset_z);
-
-	return returnValue;
+	
+	returnAngles[0] = vect1.x;
+	returnAngles[1] = vect1.y;
+	returnAngles[2] = vect1.z + *(float*)(player + m_vecViewOffset_z);
 }
 
 void hack::drawAllBones(CBaseEntity* player, int from, int to)

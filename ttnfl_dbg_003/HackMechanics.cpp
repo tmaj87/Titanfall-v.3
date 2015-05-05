@@ -5,7 +5,7 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_MENU;
-const int __AIMBOT_DIVIDE_BY = 2;
+const float __AIMBOT_DIVIDE_BY = 1.7;
 
 float const MAX_AIM_DISTANCE = 8;
 // float const MIN_AIM_DISTANCE = 30;
@@ -35,14 +35,13 @@ void HackMechanics::playersLoop()
 	static player_info_s pInfo;
 	static float distFromMe;
 	static byte type, isEnemy, a;
-
-	// 
+ 
 	// aim part
-	//
+	static float aimAngle[3], enemyAimPosition[3], vectorAngle[3], deltaVector[3], myEyes[3];
 	int targetCursor = 0;
 	static int TARGET_ARRAY_SIZE = 32;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
-
+	//
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 	{
@@ -131,43 +130,40 @@ void HackMechanics::playersLoop()
 		// aimbot &...
 		if (isEnemy)
 		{
-			static float aimAngle[3], enemyAimPosition[3], vectorAngle[3];
-			static float* myEyes;
-			static float* deltaVector;
-
-			myEyes = myHack->getEyePosition(myPlayer);
+			myHack->getEyePosition(myPlayer, myEyes);
 			//myHack->getBonePos(player, 10, enemyAimPosition);
 			myHack->getHead(player, enemyAimPosition);
 
 			// Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
 
-			// CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
+			CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
+			
 			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
 			deltaVector[2] = enemyAimPosition[2] - myEyes[2];
-
 			CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
 
-			myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition); // aimAngle
+			myEnemiesList[targetCursor] = TargetList_t(aimAngle, myEyes, enemyAimPosition);
 
 			if (__DEBUG)
 			{
+				/*
 				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance2D);
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 
 				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance3D);
-				core->g_pSurface->DrawSetTextPos(screenPos.x + 20, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-				/*
-				swprintf_s(__DEBUG_BUFF_W, L"vectorAngle:%.0f, %.0f", vectorAngle[0], vectorAngle[1]);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-
-				swprintf_s(__DEBUG_BUFF_W, L"aimAngle:%.0f, %.0f", aimAngle[0], aimAngle[1]);
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 				*/
+				
+				swprintf_s(__DEBUG_BUFF_W, L"v:%.0f, %.0f", vectorAngle[0], vectorAngle[1]);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
+				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+
+				swprintf_s(__DEBUG_BUFF_W, L"a:%.0f, %.0f", aimAngle[0], aimAngle[1]);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
+				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 			}
 
 			targetCursor++;
@@ -228,7 +224,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 		if (pInput)
 		{
 			CUserCmd* pCmd = pInput->GetUserCmd(0, sequence_number);
-			if (sequence_number%2 && pCmd) // !!!
+			if (pCmd) // sequence_number%2
 			{
 				uberStruct.viewAngles = pCmd->viewangles;
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;

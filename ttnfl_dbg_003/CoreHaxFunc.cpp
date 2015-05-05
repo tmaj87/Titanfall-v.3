@@ -46,35 +46,34 @@ void CoreHaxFunc::keyManager()
 	else if (!GetAsyncKeyState(CROSSHAIR_SWITCH_KEY) && !keyBlock[4]) keyBlock[4] = 1;
 }
 
-
-
-
-
-
-
-
-
-
-
 void CoreHaxFunc::CalcAngle(float* src, float* dst, float* angles)
 {
 	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
 	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
 
-
-	//double distance, yaw, pitch;
-	//distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
-	//yaw = atan(delta[1] / delta[0]);
-	//pitch = acos(delta[2] / distance);
-
-
-	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);  //(float)atan2(delta[2], delta[0]); // yaw; //  // yaw
-	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI); // (float)atan2(hyp, delta[1]) + M_RADPI; //  pitch; // (float)(atan(delta[1] / delta[0]) * M_RADPI); // pitch
+	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);
+	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI);
 	angles[2] = 0.0f;
 
-	if (delta[0] >= 0.0) { angles[1] += 180.0f; }
+	if (delta[0] >= 0.0)
+	{
+		angles[1] += 180.0f;
+	}
 }
 
+void CoreHaxFunc::CalcAngleV2(float* src, float* dst, float* angles)
+{
+	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
+	double distance, yaw, pitch;
+
+	distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
+	yaw = atan(delta[1] / delta[0]);
+	pitch = acos(delta[2] / distance);
+
+	angles[0] = yaw;
+	angles[1] = pitch;
+	angles[2] = 0.0f;
+}
 
 void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 {
