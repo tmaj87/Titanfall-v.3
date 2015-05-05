@@ -16,9 +16,6 @@ bool CROSSHAIR_SWITCH = 1;
 bool RADAR_SWITCH = 1;
 bool NORECOIL_SWITCH = 1;
 
-const byte PT_OFFSET = 46;
-const byte CM_OFFSET = 24;
-
 void DoMeAFavour()
 {
 	VMThook = new cvmth64();
@@ -27,21 +24,23 @@ void DoMeAFavour()
 	core = new base();
 	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
 	{
-		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, PT_OFFSET);
+		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, 46);
 		myHack = new hack();
 
 		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
 		{
-			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::Hooked_CreateMove, CM_OFFSET);
+			oCreateMove = (tCreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::Hooked_CreateMove, 24);
+		}
+		else
+		{
+			MessageBox(NULL, "error2", "", MB_OK);
 		}
 	}
 	else
 	{
-		MessageBox(NULL, "error", "", MB_OK);
+		MessageBox(NULL, "error1", "", MB_OK);
 	}
 }
-
-
 
 BOOL APIENTRY DllMain(HMODULE handle, DWORD  reason, LPVOID lpReserved)
 {

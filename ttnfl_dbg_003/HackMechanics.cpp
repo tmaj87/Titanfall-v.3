@@ -146,6 +146,8 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 		return;
 	}
 
+	return;
+
 	if (!MAIN_SWITCH)
 	{
 		myHack->drawOff();
