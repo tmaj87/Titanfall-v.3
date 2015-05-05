@@ -1,17 +1,9 @@
 #pragma once
+#include "header.h"
+
 class HackMechanics
 {
 public:
-	/*
-	CBaseEntity* player;
-	Vector playerPos, screenPos;
-	player_info_s pInfo;
-	float distFromMe;
-	byte type, isEnemy, a;
-	VPANEL mstp;
-	*/
-
-
 	HackMechanics();
 	~HackMechanics();
 
@@ -25,5 +17,6 @@ private:
 	static bool isAboutMeAvailable();
 	static bool isCorrectPanel(IPanel* pThis, VPANEL vguiPanel);
 	static void drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
+	static void playersLoop();
 };
 

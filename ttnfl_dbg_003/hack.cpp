@@ -388,6 +388,13 @@ void hack::drawStat()
 	core->g_pSurface->DrawPrintText(offStr, wcslen(offStr));
 }
 
+/*
+void hack::drawDistance()
+{
+
+}
+*/
+
 void hack::drawStatLn()
 {
 	static wchar_t buff[512];

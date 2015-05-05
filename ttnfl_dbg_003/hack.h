@@ -73,10 +73,16 @@ struct myStruct {
 	QAngle viewAngles;
 	QAngle prefferedAimAngles;
 	QAngle bufferedAngles;
+	float aimAt[3];
+	myStruct()
+	{
+		aimAt[0] = 0;
+		aimAt[1] = 0;
+		aimAt[2] = 0;
+	}
 };
 
 extern tPlat_FloatTime Plat_FloatTime;
 extern base* core;
 extern CBaseEntity* myPlayer;
 extern myStruct uberStruct;
-extern float aimAt[3];

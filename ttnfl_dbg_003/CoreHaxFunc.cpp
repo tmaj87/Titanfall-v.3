@@ -47,6 +47,15 @@ void CoreHaxFunc::keyManager()
 }
 
 
+
+
+
+
+
+
+
+
+
 void CoreHaxFunc::CalcAngle(float* src, float* dst, float* angles)
 {
 	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
@@ -82,12 +91,12 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	}
 	else
 	{
-		yaw = (float)(atan2(forward[1], forward[0]) * 180 / M_RADPI); // M_PI);
+		yaw = (float)(atan2(forward[1], forward[0]) * 180 / M_PI);
 		if (yaw < 0)
 			yaw += 360;
 
 		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
-		pitch = (float)(atan2(-forward[2], tmp) * 180 / M_RADPI); // M_PI);
+		pitch = (float)(atan2(-forward[2], tmp) * 180 / M_PI);
 		if (pitch < 0)
 			pitch += 360;
 	}
