@@ -61,20 +61,6 @@ void CoreHaxFunc::CalcAngle(float* src, float* dst, float* angles)
 	}
 }
 
-void CoreHaxFunc::CalcAngleV2(float* src, float* dst, float* angles)
-{
-	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
-	double distance, yaw, pitch;
-
-	distance = sqrt(pow(delta[0], 2) + pow(delta[1], 2) + pow(delta[2], 2));
-	yaw = atan(delta[1] / delta[0]);
-	pitch = acos(delta[2] / distance);
-
-	angles[0] = yaw;
-	angles[1] = pitch;
-	angles[2] = 0.0f;
-}
-
 void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 {
 	//Assert(s_bMathlibInitialized);

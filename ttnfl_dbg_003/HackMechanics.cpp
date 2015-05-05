@@ -134,10 +134,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			//myHack->getBonePos(player, 10, enemyAimPosition);
 			myHack->getHead(player, enemyAimPosition);
 
-			// Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchWeapon_Angle);
-
 			CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
-			CoreHaxFunc::CalcAngleV2(myEyes, enemyAimPosition, aimAngleV2);
 			
 			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
@@ -157,22 +154,16 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 			if (__DEBUG)
 			{
-				/*
-				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance2D);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-
-				swprintf_s(__DEBUG_BUFF_W, L"%.1f", myEnemiesList[targetCursor].distance3D);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-				*/
-				
 				swprintf_s(__DEBUG_BUFF_W, L"v:%.0f, %.0f", vectorAngle[0], vectorAngle[1]);
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 
 				swprintf_s(__DEBUG_BUFF_W, L"a:%.0f, %.0f", aimAngle[0], aimAngle[1]);
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
+				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+
+				swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].crosshairDistance);
+				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 40);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 			}
 
