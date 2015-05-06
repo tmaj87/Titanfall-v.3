@@ -46,25 +46,9 @@ void CoreHaxFunc::keyManager()
 	else if (!GetAsyncKeyState(CROSSHAIR_SWITCH_KEY) && !keyBlock[4]) keyBlock[4] = 1;
 }
 
-void CoreHaxFunc::CalcAngle(float* src, float* dst, float* angles)
-{
-	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
-	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
-
-	angles[0] = (float)(asin(delta[2] / hyp) * M_RADPI);
-	angles[1] = (float)(atan(delta[1] / delta[0]) * M_RADPI);
-	angles[2] = 0.0f;
-
-	if (delta[0] >= 0.0)
-	{
-		angles[1] += 180.0f;
-	}
-}
-
 void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 {
-	//Assert(s_bMathlibInitialized);
-	float	tmp, yaw, pitch;
+	float tmp, yaw, pitch;
 
 	if (forward[1] == 0 && forward[0] == 0)
 	{
@@ -77,13 +61,8 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	else
 	{
 		yaw = (float)(atan2(forward[1], forward[0]) * 180 / M_PI);
-		if (yaw < 0)
-			yaw += 360;
-
 		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
 		pitch = (float)(atan2(-forward[2], tmp) * 180 / M_PI);
-		if (pitch < 0)
-			pitch += 360;
 	}
 
 	angles[0] = pitch;

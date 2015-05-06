@@ -36,7 +36,7 @@ typedef struct _PEB_LDR_DATA {
 struct TargetList_t
 {
 	float distance3D;
-	float crosshairDistance;
+	float distance2D;
 	float AimbotAngle[3];
 
 	TargetList_t()
@@ -60,10 +60,13 @@ struct TargetList_t
 			pow(double(eNy - myCoordsY), 2.0) +
 			pow(double(eNz - myCoordsZ), 2.0));
 	}
+};
 
-	void fill2Ddistance(float distance)
+struct CompareTargetEnArray2D
+{
+	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
 	{
-		crosshairDistance = distance;
+		return lhs.distance2D < rhs.distance2D;
 	}
 };
 
@@ -72,13 +75,5 @@ struct CompareTargetEnArray3D
 	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
 	{
 		return lhs.distance3D < rhs.distance3D;
-	}
-};
-
-struct CompareTargetEnArray2D
-{
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
-	{
-		return lhs.crosshairDistance < rhs.crosshairDistance;
 	}
 };

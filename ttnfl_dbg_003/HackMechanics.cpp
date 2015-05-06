@@ -4,7 +4,7 @@ int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
 
-const byte __AIMBOT_KEY = VK_MENU;
+const byte __AIMBOT_KEY = VK_LBUTTON; // VK_MENU;
 const float __AIMBOT_DIVIDE_BY = 3.1;
 
 float const MAX_AIM_DISTANCE = 8;
@@ -37,7 +37,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	static byte type, isEnemy, a;
  
 	// aim part
-	static float aimAngle[3], enemyAimPosition[3], vectorAngle[3], deltaVector[3], myEyes[3], aimAngleV2[3];
+	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3];
+	static Vector vecEnemyAimPosition;
 	int targetCursor = 0;
 	static int TARGET_ARRAY_SIZE = 32;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
@@ -121,12 +122,6 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			myHack->drawOnRadar(screenPos);
 		}
 
-		if (__DEBUG)
-		{
-			myHack->drawStatLn();
-			myHack->drawDebug();
-		}
-
 		// aimbot &...
 		if (isEnemy)
 		{
@@ -134,47 +129,41 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			//myHack->getBonePos(player, 10, enemyAimPosition);
 			myHack->getHead(player, enemyAimPosition);
 
-			CoreHaxFunc::CalcAngle(myEyes, enemyAimPosition, aimAngle);
-			
+			static Vector hisHeadIn2D;
+			// conversion for 2D
+			vecEnemyAimPosition.x = enemyAimPosition[0];
+			vecEnemyAimPosition.y = enemyAimPosition[1];
+			vecEnemyAimPosition.z = enemyAimPosition[2];
+			myHack->w2s(vecEnemyAimPosition, hisHeadIn2D);
+			//
 			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
 			deltaVector[2] = enemyAimPosition[2] - myEyes[2];
 			CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
-
-			myEnemiesList[targetCursor] = TargetList_t(aimAngle, myEyes, enemyAimPosition);
-
-			// ..!
+			//
+			myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
+			//
 			static int w, h;
 			core->g_pIPanel->GetSize(vguiPanel, w, h);
-			myEnemiesList[targetCursor].fill2Ddistance(
-				sqrt(
-				pow(double(w / 2 - screenPos.x), 2.0) +
-				pow(double(h / 2 - screenPos.y), 2.0)
-				));
-
-			if (__DEBUG)
-			{
-				swprintf_s(__DEBUG_BUFF_W, L"v:%.0f, %.0f", vectorAngle[0], vectorAngle[1]);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-
-				swprintf_s(__DEBUG_BUFF_W, L"a:%.0f, %.0f", aimAngle[0], aimAngle[1]);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 20);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-
-				swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].crosshairDistance);
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y + 40);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-			}
+			myEnemiesList[targetCursor].distance2D = (float)sqrt(
+				pow(double(w / 2 - hisHeadIn2D.x), 2.0) +
+				pow(double(h / 2 - hisHeadIn2D.y), 2.0));
+			//
 
 			targetCursor++;
+		}
+
+		if (__DEBUG)
+		{
+			myHack->drawStatLn();
+			myHack->drawDebug();
 		}
 	}
 
 	// aimbot..!
 	if (targetCursor > 0)
 	{
-		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D()); // 2D..!
+		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D());
 		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
 		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
 		uberStruct.aimAt[2] = 1;

@@ -1,6 +1,4 @@
 #pragma once
-#include "header.h"
-
 class CoreHaxFunc
 {
 public:

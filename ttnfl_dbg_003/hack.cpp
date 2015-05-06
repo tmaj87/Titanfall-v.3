@@ -99,8 +99,6 @@ void hack::inTheMiddle(VPANEL vguiPanel)
 	static int w, h;
 	core->g_pIPanel->GetSize(vguiPanel, w, h);
 	core->g_pSurface->DrawSetColor(255, 20, 147, 160);
-	//core->g_pSurface->DrawLine(w / 2 - 5, h / 2, w / 2 + 5, h / 2);
-	//core->g_pSurface->DrawLine(w / 2, h / 2 - 5, w / 2, h / 2 + 5);
 	core->g_pSurface->DrawLine(w / 2 + 5, h / 2 - 2, w / 2 + 5, h / 2 + 2);
 	core->g_pSurface->DrawLine(w / 2 - 5, h / 2 - 2, w / 2 - 5, h / 2 + 2);
 	core->g_pSurface->DrawLine(w / 2 - 2, h / 2 - 5, w / 2 + 2, h / 2 - 5);
@@ -135,9 +133,6 @@ void hack::getMatrix()
 	} while (!pRender);
 
 	m_vMatrix = pRender->GetWorldToScreenMatrix();
-
-	//sprintf_s(__DEBUG_BUFF, "dwFunc1:%llX dwRenderHolder:%llX pRender:%llX", dwFunc1, dwRenderHolder, pRender);
-	//core->debug->toFile(__DEBUG_BUFF);
 }
 
 
@@ -218,7 +213,6 @@ void hack::drawPlayer(CBaseEntity* player, float distance, byte isEnemy)
 			drawBrackets(s.screenPos.x, s.screenPos.y, iSize);
 			
 			// draw line from screen center
-			// *(int*)(DWORD64(myPlayer) + m_iTeamNum) != *(int*)(DWORD64(player) + m_iTeamNum)
 			if (distance < 1000 && isEnemy)
 			{
 				core->g_pSurface->DrawSetColor(255, 0, 0, 60);
@@ -332,11 +326,11 @@ void hack::drawDebug()
 	swprintf_s(buff, L"uberStruct.bufferedAngles.y: x:%.2f,y:%.2f", uberStruct.bufferedAngles.x, uberStruct.bufferedAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 200);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-	*/
 
 	swprintf_s(buff, L"uberStruct.viewAngles.x: x:%.2f,y:%.2f", uberStruct.viewAngles.x, uberStruct.viewAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 220);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+	*/
 }
 
 void hack::getEyePosition(CBaseEntity* player, float* returnAngles)
@@ -387,13 +381,6 @@ void hack::drawStat()
 	core->g_pSurface->DrawSetTextPos(10, 10);
 	core->g_pSurface->DrawPrintText(offStr, wcslen(offStr));
 }
-
-/*
-void hack::drawDistance()
-{
-
-}
-*/
 
 void hack::drawStatLn()
 {
