@@ -4,13 +4,10 @@ int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
 
-const byte __AIMBOT_KEY = VK_LBUTTON; // VK_MENU;
+const byte __AIMBOT_KEY = VK_LBUTTON;
 const float __AIMBOT_DIVIDE_BY = 3.1;
 
-float const MAX_AIM_DISTANCE = 8;
-// float const MIN_AIM_DISTANCE = 30;
-float const CRITICAL_3D_DISTANCE = 200;
-// float const MAX_3D_DISTANCE = 500;
+float const MAX_AIM_DISTANCE = 120;
 
 VPANEL HackMechanics::mstp;
 
@@ -150,6 +147,13 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				pow(double(h / 2 - hisHeadIn2D.y), 2.0));
 			//
 
+			if (__DEBUG)
+			{
+				swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
+				core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
+				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+			}
+
 			targetCursor++;
 		}
 
@@ -163,14 +167,14 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	// aimbot..!
 	if (targetCursor > 0)
 	{
-		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D());
-		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
-		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
-		uberStruct.aimAt[2] = 1;
-	}
-	else
-	{
 		uberStruct.aimAt[2] = 0;
+		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D());
+		if (myEnemiesList[0].distance2D < MAX_AIM_DISTANCE)
+		{
+			uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
+			uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
+			uberStruct.aimAt[2] = 1;
+		}
 	}
 
 	targetCursor = 0;
@@ -202,7 +206,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 		if (pInput)
 		{
 			CUserCmd* pCmd = pInput->GetUserCmd(0, sequence_number);
-			if (pCmd) // sequence_number%2
+			if (pCmd)
 			{
 				uberStruct.viewAngles = pCmd->viewangles;
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
