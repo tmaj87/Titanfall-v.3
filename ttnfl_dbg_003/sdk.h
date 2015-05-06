@@ -206,7 +206,9 @@ public:
 	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, Trace *pTrace)
 	{
 		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, ITraceFilter*, Trace);
-		return getvfunc<OriginalFn>(this, 8)(this, ray, fMask, pTraceFilter, *pTrace); //4,5
+		return getvfunc<OriginalFn>(this, 19)(this, ray, fMask, pTraceFilter, *pTrace);
+		//8,9,10,11,13,15,16,-crash
+		//12,14,17,18,-nothing
 	}
 };
 
