@@ -13,8 +13,8 @@ char __DEBUG_BUFF[512];
 wchar_t __DEBUG_BUFF_W[512];
 bool MAIN_SWITCH = 0;
 bool CROSSHAIR_SWITCH = 1;
-bool RADAR_SWITCH = 1;
-bool NORECOIL_SWITCH = 0;
+bool RADAR_SWITCH = 0;
+bool AIMBOT_SWITCH = 1;
 
 void DoMeAFavour()
 {

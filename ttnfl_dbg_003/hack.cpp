@@ -213,12 +213,14 @@ void hack::drawPlayer(CBaseEntity* player, float distance, byte isEnemy)
 			drawBrackets(s.screenPos.x, s.screenPos.y, iSize);
 			
 			// draw line from screen center
+			/*
 			if (distance < 1000 && isEnemy)
 			{
 				core->g_pSurface->DrawSetColor(255, 0, 0, 60);
 				drawLineFromScreenCenter(s.screenPos.x, s.screenPos.y);
 				
 			}
+			*/
 		}
 	}
 }
@@ -292,10 +294,12 @@ void hack::drawMinion(CBaseEntity* player, float distance, byte isEnemy)
 			)
 		{
 			drawCross(s.screenPos.x, s.screenPos.y, (s.screenBottom.y - s.screenTop.y) / 2);
+			/*
 			if (isEnemy && distance < 1000)
 			{
 				drawLineFromScreenCenter(s.screenPos.x, s.screenPos.y);
 			}
+			*/
 		}
 	}
 }
@@ -389,19 +393,19 @@ void hack::drawStatLn()
 	//core->g_pSurface->DrawSetTextFont(0);
 	core->g_pSurface->DrawSetTextColor(255, 255, 255, 150);
 
-	swprintf_s(buff, L"MAIN_SWITCH: %S", MAIN_SWITCH ? "true" : "false");
+	swprintf_s(buff, L"MAIN: %S", MAIN_SWITCH ? "true" : "false");
 	core->g_pSurface->DrawSetTextPos(10, 10);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	swprintf_s(buff, L"CROSSHAIR_SWITCH: %S", CROSSHAIR_SWITCH ? "true" : "false");
+	swprintf_s(buff, L"CROSSHAIR: %S", CROSSHAIR_SWITCH ? "true" : "false");
 	core->g_pSurface->DrawSetTextPos(10, 30);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	swprintf_s(buff, L"RADAR_SWITCH: %S", RADAR_SWITCH ? "true" : "false");
+	swprintf_s(buff, L"RADAR: %S", RADAR_SWITCH ? "true" : "false");
 	core->g_pSurface->DrawSetTextPos(10, 50);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	swprintf_s(buff, L"NORECOIL_SWITCH: %S", NORECOIL_SWITCH ? "true" : "false");
+	swprintf_s(buff, L"AIM: %S", AIMBOT_SWITCH ? "true" : "false");
 	core->g_pSurface->DrawSetTextPos(10, 70);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 }

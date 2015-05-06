@@ -25,7 +25,7 @@ extern wchar_t __DEBUG_BUFF_W[512];
 extern bool MAIN_SWITCH;
 extern bool CROSSHAIR_SWITCH;
 extern bool RADAR_SWITCH;
-extern bool NORECOIL_SWITCH;
+extern bool AIMBOT_SWITCH;
 
 typedef struct _PEB_LDR_DATA {
 	BYTE       Reserved1[8];

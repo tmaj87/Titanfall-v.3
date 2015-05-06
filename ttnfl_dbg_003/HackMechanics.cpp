@@ -5,7 +5,7 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_LBUTTON;
-const float __AIMBOT_DIVIDE_BY = 3.1;
+const float __AIMBOT_DIVIDE_BY = 2.9;
 float const MAX_AIM_DISTANCE = 120;
 
 VPANEL HackMechanics::mstp;
@@ -217,7 +217,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
 				uberStruct.bufferedAngles.y = (uberStruct.aimAt[1] - pCmd->viewangles.y) / __AIMBOT_DIVIDE_BY;
 
-				if (NORECOIL_SWITCH && uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000)
+				if (AIMBOT_SWITCH && uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
