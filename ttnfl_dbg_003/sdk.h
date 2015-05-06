@@ -171,10 +171,10 @@ public:
 
 struct Ray_t
 {
-	VectorAligned  m_Start;	// starting point, centered within the extents
-	VectorAligned  m_Delta;	// direction + length of the ray
-	VectorAligned  m_StartOffset;	// Add this to m_Start to get the actual ray start
-	VectorAligned  m_Extents;	// Describes an axis aligned box extruded along a ray
+	__declspec(align(16)) Vector   m_Start;	// starting point, centered within the extents
+	__declspec(align(16)) Vector   m_Delta;	// direction + length of the ray
+	__declspec(align(16)) Vector   m_StartOffset;	// Add this to m_Start to get the actual ray start
+	__declspec(align(16)) Vector   m_Extents;	// Describes an axis aligned box extruded along a ray
 	bool	m_IsRay;	// are the extents zero?
 	bool	m_IsSwept;	// is delta != 0?
 
@@ -197,15 +197,22 @@ struct Ray_t
 	}
 };
 
+class ITraceFilter
+{
+public:
+};
+
 class IEngineTrace
 {
 public:
-	void TraceRay(const Ray_t &ray, Trace *pTrace)
+	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, Trace *pTrace)
 	{
-		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, void*, Trace);
-		return getvfunc<OriginalFn>(this, 4)(this, ray, 0x4600400B, NULL, *pTrace);
+		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, ITraceFilter*, Trace);
+		return getvfunc<OriginalFn>(this, 5)(this, ray, fMask, pTraceFilter, *pTrace); //4
 	}
 };
+
+
 
 class EngineClient
 {

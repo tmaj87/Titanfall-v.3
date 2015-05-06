@@ -6,6 +6,7 @@
 #include <algorithm>
 #define M_RADPI 57.295779513082
 #define M_PI 3.14159265358979323846
+#define DEBUG_SWITCH 1
 #include "vmth64.h"
 #include "hack.h"
 #include "CoreHaxFunc.h"

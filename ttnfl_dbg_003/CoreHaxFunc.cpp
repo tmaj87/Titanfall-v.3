@@ -87,7 +87,7 @@ bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseE
 	Trace tr;
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
-	core->g_pTrace->TraceRay(ray, &tr);
+	core->g_pTrace->TraceRay(ray, 0x4600400B, NULL, &tr);
 	if (tr.fraction > 0.97f)
 	{
 		return true;

@@ -157,7 +157,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 					core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
 					core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 
-					if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), player))
+					if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), myPlayer))
 					{
 						swprintf_s(__DEBUG_BUFF_W, L"visible");
 						core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
