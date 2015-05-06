@@ -180,11 +180,9 @@ struct Ray_t
 
 	void Init(Vector const& start, Vector const& end)
 	{
-		Assert(&end);
+		//Assert(&end);
 		//VectorSubtract(end, start, m_Delta);
-		m_Delta.x = start.x - end.x;
-		m_Delta.y = start.y - end.y;
-		m_Delta.z = start.z - end.z;
+		Vector m_Delta = start - end;
 
 		m_IsSwept = (m_Delta.LengthSqr() != 0);
 
@@ -208,7 +206,7 @@ public:
 	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, Trace *pTrace)
 	{
 		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, ITraceFilter*, Trace);
-		return getvfunc<OriginalFn>(this, 5)(this, ray, fMask, pTraceFilter, *pTrace); //4
+		return getvfunc<OriginalFn>(this, 5)(this, ray, fMask, pTraceFilter, *pTrace); //4,5
 	}
 };
 

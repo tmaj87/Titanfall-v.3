@@ -78,7 +78,7 @@ void __fastcall CoreHaxFunc::traceLine(const Vector& start /*rcx*/, const Vector
 
 DWORD64* CoreHaxFunc::findPatternInModule(void* var1, byte* var2, const char* var3)
 {
-	return NULL;
+	return 0;
 }
 
 bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseEntity *baseEnt)
@@ -87,13 +87,24 @@ bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseE
 	Trace tr;
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
-	core->g_pTrace->TraceRay(ray, 0x4600400B, NULL, &tr);
+	core->g_pTrace->TraceRay(ray, 0x4600400B, 0, &tr);
+
+	/*if (tr.allsolid || tr.startsolid)
+		return false;*/
+	/*if (tr.m_pEnt && tr.m_pEnt == pTargetPlayer)
+		return true;*/
+	if (tr.fraction >= 1.0f)
+		return true;
+
+	return false;
+
+	/*
 	if (tr.fraction > 0.97f)
 	{
 		return true;
 	}
 	return false;
-	/*
+
 	if (tr.m_pEnt && baseEnt)
 	{
 		if (tr.m_pEnt->index == 0 || tr.allsolid)

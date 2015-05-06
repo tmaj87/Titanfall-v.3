@@ -40,7 +40,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	TargetList_t* myEnemiesList = new TargetList_t[32];
 	//
 
-	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
+	for (int i = 0; i < 64; i++) // core->g_pEntList->GetHighestEntityIndex()
 	{
 		player = core->g_pEntList->GetClientEntity(i);
 
