@@ -122,17 +122,15 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		if (isEnemy)
 		{
 			myHack->getEyePosition(myPlayer, myEyes);
-
-			static int randomBone;
-			randomBone = rand() % 3 + 9;
-
-			if (type == 2)
+			if (type == 1)
 			{
-				myHack->getHead(player, enemyAimPosition);
+				static int randomBone;
+				randomBone = rand() % 2 + 10;
+				myHack->getBonePos(player, randomBone, enemyAimPosition);
 			}
 			else
 			{
-				myHack->getBonePos(player, randomBone, enemyAimPosition);
+				myHack->getHead(player, enemyAimPosition);
 			}
 
 			if (myHack->w2s(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))

@@ -37,29 +37,32 @@ void DoMeAFavour()
 		}
 
 		// !!
-		static cvmth64* tmpHook = new cvmth64();
-		if (tmpHook->bInitialize((PDWORD64*)core->g_pTrace))
+		if (SHOW_DEBUG)
 		{
-			sprintf_s(__DEBUG_BUFF, "func count: %d", tmpHook->iGetFuncCount());
-			core->debug->toFile(__DEBUG_BUFF);
-			
-			static int MAX_LOOP = tmpHook->iGetFuncCount();
-			for (int i = 0; i < MAX_LOOP; i++)
+			static cvmth64* tmpHook = new cvmth64();
+			if (tmpHook->bInitialize((PDWORD64*)core->g_pTrace))
 			{
-				sprintf_s(__DEBUG_BUFF, "func%d: %d", i, tmpHook->dwGetMethodAddress(i));
+				sprintf_s(__DEBUG_BUFF, "func count: %d", tmpHook->iGetFuncCount());
 				core->debug->toFile(__DEBUG_BUFF);
-			}
 
-			/*
-			int funcIdxs2[] = { 42, 43, 44 }; // 30,..38,39,40
-			for (int i = 0; i < sizeof(funcIdxs2) / sizeof(*funcIdxs2); i++)
-			{
+				static int MAX_LOOP = tmpHook->iGetFuncCount();
+				for (int i = 0; i < MAX_LOOP; i++)
+				{
+					sprintf_s(__DEBUG_BUFF, "func%d: %d", i, tmpHook->dwGetMethodAddress(i));
+					core->debug->toFile(__DEBUG_BUFF);
+				}
+
+				/*
+				int funcIdxs2[] = { 42, 43, 44 }; // 30,..38,39,40
+				for (int i = 0; i < sizeof(funcIdxs2) / sizeof(*funcIdxs2); i++)
+				{
 				func2check2 = (testFunc2)VMThook->dwGetMethodAddress(funcIdxs2[i]);
 				sprintf_s(buff2, "%d --> %s", funcIdxs2[i], func2check2(pThis, vguiPanel));
 				d->toFile(buff2);
+				}
+				d->toFile("");
+				*/
 			}
-			d->toFile("");
-			*/
 		}
 	}
 	else

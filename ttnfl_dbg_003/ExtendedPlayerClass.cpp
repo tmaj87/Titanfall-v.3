@@ -1,11 +1,7 @@
 #include "header.h"
 
 
-ExtendedPlayerClass::ExtendedPlayerClass()
+ExtendedPlayerClass::ExtendedPlayerClass(CBaseEntity* player)
 {
-}
-
-
-ExtendedPlayerClass::~ExtendedPlayerClass()
-{
+	//
 }

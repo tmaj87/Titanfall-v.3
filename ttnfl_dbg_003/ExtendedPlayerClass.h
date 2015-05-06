@@ -1,9 +1,11 @@
 #pragma once
+#include "header.h"
+
+
 class ExtendedPlayerClass
 {
 public:
-	ExtendedPlayerClass();
-	~ExtendedPlayerClass();
+	ExtendedPlayerClass(CBaseEntity*);
 private:
 	//
 };

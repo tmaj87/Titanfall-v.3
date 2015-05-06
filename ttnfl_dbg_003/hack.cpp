@@ -54,7 +54,7 @@ void base::initFaces()
 	g_pClient = (IBaseClientDLL*)g_ClientFactory("VClient018", NULL);
 	Plat_FloatTime = (tPlat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
 
-	if (1)
+	if (SHOW_DEBUG)
 	{
 		sprintf_s(__DEBUG_BUFF, "g_pTrace: %p", g_pTrace);
 		debug->toFile(__DEBUG_BUFF);

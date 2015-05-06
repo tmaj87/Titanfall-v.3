@@ -59,6 +59,8 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	angles[2] = 0;
 }
 
+
+
 void __fastcall CoreHaxFunc::traceLine(const Vector& start /*rcx*/, const Vector& end /*rdx*/, unsigned int mask /*r8*/, const void* ignore /*r9*/, int collisionGroup, int unk, Trace* trace)
 {
 	static decltype(traceLine)* UTIL_TraceLine;
