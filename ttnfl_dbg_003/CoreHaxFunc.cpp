@@ -67,14 +67,14 @@ bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, Vector
 	Trace tr;
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
-	core->g_pTrace->TraceRay(ray, 0x4600400B, 0, &tr);
+	core->g_pTrace->TraceRay(ray, 0x4600400B, 0, &tr); // 0x46004003
 
 	/*if (tr.allsolid || tr.startsolid)
 		return false;*/
 	/*if (tr.m_pEnt && tr.m_pEnt == pTargetPlayer)
 		return true;*/
 
-	swprintf_s(__DEBUG_BUFF_W, L"%.2f", tr.fraction);
+	swprintf_s(__DEBUG_BUFF_W, L"%.4f", tr.fraction);
 	core->g_pSurface->DrawSetTextPos(posToWrite.x, posToWrite.y);
 	core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 

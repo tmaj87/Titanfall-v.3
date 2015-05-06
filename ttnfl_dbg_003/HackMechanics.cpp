@@ -5,7 +5,7 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_LBUTTON;
-const float __AIMBOT_DIVIDE_BY = 2.9;
+const float __AIMBOT_DIVIDE_BY = 1.7;
 float const MAX_AIM_DISTANCE = 120;
 
 VPANEL HackMechanics::mstp;
@@ -135,7 +135,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 			if (myHack->w2s(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
 			{
-				// vector substraction
+				// vector subtraction
 				deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 				deltaVector[1] = enemyAimPosition[1] - myEyes[1];
 				deltaVector[2] = enemyAimPosition[2] - myEyes[2];
@@ -168,7 +168,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			myHack->drawDebug();
 
 			myHack->getHead(player, enemyAimPosition);
-			if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), playerPos))
+			if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), screenPos))
 			{
 				/*
 				swprintf_s(__DEBUG_BUFF_W, L"visible");

@@ -13,7 +13,7 @@ char __DEBUG_BUFF[512];
 wchar_t __DEBUG_BUFF_W[512];
 bool MAIN_SWITCH = 0;
 bool CROSSHAIR_SWITCH = 1;
-bool RADAR_SWITCH = 0;
+bool RADAR_SWITCH = 1;
 bool AIMBOT_SWITCH = 1;
 
 void DoMeAFavour()
@@ -36,7 +36,6 @@ void DoMeAFavour()
 			MessageBox(NULL, "error2", "", MB_OK);
 		}
 
-		// !!
 		if (SHOW_DEBUG)
 		{
 			static cvmth64* tmpHook = new cvmth64();
@@ -51,17 +50,6 @@ void DoMeAFavour()
 					sprintf_s(__DEBUG_BUFF, "func%d: %d", i, tmpHook->dwGetMethodAddress(i));
 					core->debug->toFile(__DEBUG_BUFF);
 				}
-
-				/*
-				int funcIdxs2[] = { 42, 43, 44 }; // 30,..38,39,40
-				for (int i = 0; i < sizeof(funcIdxs2) / sizeof(*funcIdxs2); i++)
-				{
-				func2check2 = (testFunc2)VMThook->dwGetMethodAddress(funcIdxs2[i]);
-				sprintf_s(buff2, "%d --> %s", funcIdxs2[i], func2check2(pThis, vguiPanel));
-				d->toFile(buff2);
-				}
-				d->toFile("");
-				*/
 			}
 		}
 	}
