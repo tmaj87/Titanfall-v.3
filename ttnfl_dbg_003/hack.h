@@ -22,7 +22,7 @@ public:
 	IPanel* g_pIPanel;
 	IBaseClientDLL* g_pClient;
 	dbg* debug;
-	EngineTraceClient004* engineTrace;
+	IEngineTrace* g_pTrace;
 
 	base();
 	void initFaces();

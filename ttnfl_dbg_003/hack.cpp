@@ -46,7 +46,7 @@ void base::initFaces()
 
 	// ...
 	g_pEngine = (EngineClient*)g_pEngineFactory("VEngineClient013", NULL);
-	engineTrace = (EngineTraceClient004*)g_pEngineFactory("EngineTraceClient004", NULL);
+	g_pTrace = (IEngineTrace*)g_pEngineFactory("g_pTraceClient004", NULL);
 	g_pEntList = (CEntList*)g_ClientFactory("VClientEntityList003", NULL);
 	g_pSurface = (ISurface*)g_VGUIFactory("VGUI_Surface031", NULL);
 	g_pIPanel = (IPanel*)g_VGUI2Factory("VGUI_Panel009", NULL);
@@ -56,9 +56,9 @@ void base::initFaces()
 
 	if (0) // __DEBUG
 	{
-		char buff[64] = { 0 };
-		sprintf_s(buff, "engineTrace: %p\n", engineTrace);
-		debug->toFile(buff);
+		//char buff[64] = { 0 };
+		//sprintf_s(buff, "g_pTrace: %p\n", g_pTrace);
+		//debug->toFile(buff);
 		//sprintf_s(buff, "g_pSurface: %p\n", g_pSurface);
 		//debug->toFile(buff);
 	}

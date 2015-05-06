@@ -58,3 +58,48 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	angles[1] = yaw;
 	angles[2] = 0;
 }
+
+void __fastcall CoreHaxFunc::traceLine(const Vector& start /*rcx*/, const Vector& end /*rdx*/, unsigned int mask /*r8*/, const void* ignore /*r9*/, int collisionGroup, int unk, Trace* trace)
+{
+	static decltype(traceLine)* UTIL_TraceLine;
+
+	if (!UTIL_TraceLine)
+	{
+		UTIL_TraceLine = (decltype(traceLine)*)findPatternInModule(
+			GetModuleHandle("client.dll"),
+			(BYTE*)"\x48\x8B\xC4\x48\x89\x58\x08\x48\x89\x70\x10\x57\x48\x81\xEC\x00\x00\x00\x00\xF3\x0F",
+			"xxxxxxxxxxxxxxx????xx");
+	}
+	else
+	{
+		UTIL_TraceLine(start, end, mask, ignore, collisionGroup, unk, trace);
+	}
+}
+
+DWORD64* CoreHaxFunc::findPatternInModule(void* var1, byte* var2, const char* var3)
+{
+	return NULL;
+}
+
+bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseEntity *baseEnt)
+{
+	//player_info_t pinfo;
+	Trace tr;
+	Ray_t ray;
+	ray.Init(vecAbsStart, vecAbsEnd);
+	core->g_pTrace->TraceRay(ray, &tr);
+	if (tr.fraction > 0.97f)
+	{
+		return true;
+	}
+	return false;
+	/*
+	if (tr.m_pEnt && baseEnt)
+	{
+		if (tr.m_pEnt->index == 0 || tr.allsolid)
+			return false;
+		if ((GEngine->GetPlayerInfo(tr.m_pEnt->index, &pinfo)
+			|| baseEnt->index == tr.m_pEnt->index) && tr.fraction > 0.92)
+			return true;
+	*/
+}

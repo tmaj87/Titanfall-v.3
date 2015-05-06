@@ -17,6 +17,7 @@ inline Fn getvfunc(const void* inst, size_t index, size_t offset = 0)
 
 typedef unsigned int VPANEL;
 typedef float matrix3x4[3][4];
+typedef Vector VectorAligned;
 
 typedef struct player_info_s {
 	char    _0x0000[0x0008];    // 0x0000
@@ -60,18 +61,9 @@ public:
 	}
 };
 
-//class CViewSetup;
-
 class IBaseClientDLL
 {
 public:
-	/*
-	bool GetPlayerView(CViewSetup& playerView)
-	{
-	typedef bool(__thiscall* OriginalFn)(PVOID, CViewSetup&);
-	return getvfunc<OriginalFn>(this, 74)(this, playerView);
-	}
-	*/
 };
 
 class CViewRender {
@@ -177,9 +169,42 @@ public:
 	__int64 hitbox; //0x0068 
 };//Size=0x0448  
 
-class EngineTraceClient004
+struct Ray_t
+{
+	VectorAligned  m_Start;	// starting point, centered within the extents
+	VectorAligned  m_Delta;	// direction + length of the ray
+	VectorAligned  m_StartOffset;	// Add this to m_Start to get the actual ray start
+	VectorAligned  m_Extents;	// Describes an axis aligned box extruded along a ray
+	bool	m_IsRay;	// are the extents zero?
+	bool	m_IsSwept;	// is delta != 0?
+
+	void Init(Vector const& start, Vector const& end)
+	{
+		Assert(&end);
+		//VectorSubtract(end, start, m_Delta);
+		m_Delta.x = start.x - end.x;
+		m_Delta.y = start.y - end.y;
+		m_Delta.z = start.z - end.z;
+
+		m_IsSwept = (m_Delta.LengthSqr() != 0);
+
+		VectorClear(m_Extents);
+		m_IsRay = true;
+
+		// Offset m_Start to be in the center of the box...
+		VectorClear(m_StartOffset);
+		VectorCopy(start, m_Start);
+	}
+};
+
+class IEngineTrace
 {
 public:
+	void TraceRay(const Ray_t &ray, Trace *pTrace)
+	{
+		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, void*, Trace);
+		return getvfunc<OriginalFn>(this, 4)(this, ray, 0x4600400B, NULL, *pTrace);
+	}
 };
 
 class EngineClient
