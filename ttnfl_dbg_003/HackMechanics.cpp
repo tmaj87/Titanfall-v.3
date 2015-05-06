@@ -63,6 +63,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			matrixCached = 1;
 		}
 
+		myHack->getEyePosition(myPlayer, myEyes);
 
 		playerPos = player->GetAbsOrigin();
 		if (!myHack->w2s(playerPos, screenPos))
@@ -121,7 +122,6 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		// aimbot &...
 		if (isEnemy)
 		{
-			myHack->getEyePosition(myPlayer, myEyes);
 			if (type == 1)
 			{
 				static int randomBone;
@@ -151,9 +151,11 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				
 				if (__DEBUG)
 				{
+					/*
 					swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
 					core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
 					core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+					*/
 				}
 
 				targetCursor++;
@@ -165,17 +167,14 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			myHack->drawStatLn();
 			myHack->drawDebug();
 
-			if (CoreHaxFunc::visibilityCheck(myPlayer->GetAbsOrigin(), player->GetAbsOrigin(), myPlayer))
+			myHack->getHead(player, enemyAimPosition);
+			if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), playerPos))
 			{
+				/*
 				swprintf_s(__DEBUG_BUFF_W, L"visible");
 				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
 				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-			}
-			else
-			{
-				swprintf_s(__DEBUG_BUFF_W, L"not");
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+				*/
 			}
 		}
 	}

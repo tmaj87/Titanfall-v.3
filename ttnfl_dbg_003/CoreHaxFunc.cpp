@@ -61,29 +61,7 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 
 
 
-void __fastcall CoreHaxFunc::traceLine(const Vector& start /*rcx*/, const Vector& end /*rdx*/, unsigned int mask /*r8*/, const void* ignore /*r9*/, int collisionGroup, int unk, Trace* trace)
-{
-	static decltype(traceLine)* UTIL_TraceLine;
-
-	if (!UTIL_TraceLine)
-	{
-		UTIL_TraceLine = (decltype(traceLine)*)findPatternInModule(
-			GetModuleHandle("client.dll"),
-			(BYTE*)"\x48\x8B\xC4\x48\x89\x58\x08\x48\x89\x70\x10\x57\x48\x81\xEC\x00\x00\x00\x00\xF3\x0F",
-			"xxxxxxxxxxxxxxx????xx");
-	}
-	else
-	{
-		UTIL_TraceLine(start, end, mask, ignore, collisionGroup, unk, trace);
-	}
-}
-
-DWORD64* CoreHaxFunc::findPatternInModule(void* var1, byte* var2, const char* var3)
-{
-	return 0;
-}
-
-bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseEntity *baseEnt)
+bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, Vector &posToWrite)
 {
 	//player_info_t pinfo;
 	Trace tr;
@@ -95,6 +73,11 @@ bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, CBaseE
 		return false;*/
 	/*if (tr.m_pEnt && tr.m_pEnt == pTargetPlayer)
 		return true;*/
+
+	swprintf_s(__DEBUG_BUFF_W, L"%.2f", tr.fraction);
+	core->g_pSurface->DrawSetTextPos(posToWrite.x, posToWrite.y);
+	core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+
 	if (tr.fraction >= 1.0f)
 		return true;
 
