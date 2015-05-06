@@ -6,7 +6,6 @@ myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_LBUTTON;
 const float __AIMBOT_DIVIDE_BY = 3.1;
-
 float const MAX_AIM_DISTANCE = 120;
 
 VPANEL HackMechanics::mstp;
@@ -28,7 +27,7 @@ void HackMechanics::aimAtThisPlayer(CBaseEntity* player)
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
 	static CBaseEntity* player;
-	static Vector playerPos, screenPos;
+	static Vector playerPos, screenPos, hisHeadIn2D;
 	static player_info_s pInfo;
 	static float distFromMe;
 	static byte type, isEnemy, a;
@@ -123,38 +122,46 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		if (isEnemy)
 		{
 			myHack->getEyePosition(myPlayer, myEyes);
-			//myHack->getBonePos(player, 10, enemyAimPosition);
-			myHack->getHead(player, enemyAimPosition);
 
-			static Vector hisHeadIn2D;
-			// conversion for 2D
-			vecEnemyAimPosition.x = enemyAimPosition[0];
-			vecEnemyAimPosition.y = enemyAimPosition[1];
-			vecEnemyAimPosition.z = enemyAimPosition[2];
-			myHack->w2s(vecEnemyAimPosition, hisHeadIn2D);
-			//
-			deltaVector[0] = enemyAimPosition[0] - myEyes[0];
-			deltaVector[1] = enemyAimPosition[1] - myEyes[1];
-			deltaVector[2] = enemyAimPosition[2] - myEyes[2];
-			CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
-			//
-			myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
-			//
-			static int w, h;
-			core->g_pIPanel->GetSize(vguiPanel, w, h);
-			myEnemiesList[targetCursor].distance2D = (float)sqrt(
-				pow(double(w / 2 - hisHeadIn2D.x), 2.0) +
-				pow(double(h / 2 - hisHeadIn2D.y), 2.0));
-			//
+			static int randomBone;
+			randomBone = rand() % 3 + 9;
 
-			if (__DEBUG)
+			if (type == 2)
 			{
-				swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
-				core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+				myHack->getHead(player, enemyAimPosition);
+			}
+			else
+			{
+				myHack->getBonePos(player, randomBone, enemyAimPosition);
 			}
 
-			targetCursor++;
+			if (myHack->w2s(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
+			{
+				// vector substraction
+				deltaVector[0] = enemyAimPosition[0] - myEyes[0];
+				deltaVector[1] = enemyAimPosition[1] - myEyes[1];
+				deltaVector[2] = enemyAimPosition[2] - myEyes[2];
+				CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
+				//
+				myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
+				//
+				static int w, h;
+				core->g_pIPanel->GetSize(vguiPanel, w, h);
+				myEnemiesList[targetCursor].distance2D = (float)sqrt(
+					pow(double(w / 2 - hisHeadIn2D.x), 2.0) +
+					pow(double(h / 2 - hisHeadIn2D.y), 2.0));
+				//
+				////////////////////////////////////////////////////
+
+				if (__DEBUG)
+				{
+					swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
+					core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
+					core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+				}
+
+				targetCursor++;
+			}
 		}
 
 		if (__DEBUG)
