@@ -150,9 +150,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
 					pow(double(w / 2 - hisHeadIn2D.x), 2.0) +
 					pow(double(h / 2 - hisHeadIn2D.y), 2.0));
-				//
-				////////////////////////////////////////////////////
-
+				
 				if (__DEBUG)
 				{
 					swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
