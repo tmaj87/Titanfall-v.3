@@ -74,6 +74,7 @@ struct myStruct {
 	QAngle prefferedAimAngles;
 	QAngle bufferedAngles;
 	float aimAt[3];
+	float enemyDistance2D;
 	myStruct()
 	{
 		aimAt[0] = 0;

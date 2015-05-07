@@ -50,13 +50,24 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 {
 	float tmp, yaw, pitch;
 
-	yaw = (float)(atan2(forward[1], forward[0]) * 180 / M_PI);
-	tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
-	pitch = (float)(atan2(-forward[2], tmp) * 180 / M_PI);
+	if (forward[1] == 0 && forward[0] == 0)
+	{
+		yaw = 0;
+		if (forward[2] > 0)
+			pitch = 180;
+		else
+			pitch = 0;
+	}
+	else
+	{
+		yaw = (float)(atan2(forward[1], forward[0]) * 180 / M_PI);
+		tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
+		pitch = (float)(atan2(-forward[2], tmp) * 180 / M_PI);
 
-	angles[0] = pitch;
-	angles[1] = yaw;
-	angles[2] = 0;
+		angles[0] = pitch;
+		angles[1] = yaw;
+		angles[2] = 0;
+	}
 }
 
 
