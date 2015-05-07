@@ -54,9 +54,9 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	{
 		yaw = 0;
 		if (forward[2] > 0)
-			pitch = 180;
+			pitch = 270;
 		else
-			pitch = 0;
+			pitch = 90;
 	}
 	else
 	{

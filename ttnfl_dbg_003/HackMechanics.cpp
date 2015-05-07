@@ -125,7 +125,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		}
 
 		// aimbot &...
-		if (isEnemy)
+		if (isEnemy && type != 2)
 		{
 			if (type == 1)
 			{
@@ -229,7 +229,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
 				uberStruct.bufferedAngles.y = (uberStruct.aimAt[1] - pCmd->viewangles.y) / __AIMBOT_DIVIDE_BY;
 
-				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < 4)
+				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < 10)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
