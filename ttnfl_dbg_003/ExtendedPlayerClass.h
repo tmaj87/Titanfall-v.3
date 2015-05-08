@@ -11,11 +11,13 @@ public:
 	int index;
 	int teamNumber;
 	bool enemy;
+	float distance2D;
+	float distance3D;
 
 	//ExtendedPlayerClass(CBaseEntity*);
 	ExtendedPlayerClass(CBaseEntity*, int);
-	bool isEnemy();
 private:
 	CBaseEntity* player;
+	bool isEnemy();
 };
 

@@ -86,14 +86,14 @@ void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte is
 	switch (type)
 	{
 	case 1: // player
-		draw->pilot(player, distFromMe, isEnemy);
+		pilot(player, distFromMe, isEnemy);
 		break;
 	case 2: // titan
 		if (isEnemy)
 		{
 			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
 		}
-		draw->titan(player, distFromMe, isEnemy);
+		titan(player, distFromMe, isEnemy);
 		break;
 	case 3: // minon
 		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
@@ -101,7 +101,7 @@ void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte is
 			return;
 		}
 		core->g_pSurface->DrawSetColor(255, 255, 0, alpha);
-		draw->minion(player, distFromMe, isEnemy);
+		minion(player, distFromMe, isEnemy);
 		break;
 	}
 }

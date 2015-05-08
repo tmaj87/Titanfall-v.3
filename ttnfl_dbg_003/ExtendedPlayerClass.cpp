@@ -15,5 +15,5 @@ ExtendedPlayerClass::ExtendedPlayerClass(CBaseEntity* thisPlayer, int thisIndex)
 
 bool ExtendedPlayerClass::isEnemy()
 {
-	return teamNumber != *(int*)(DWORD64(myPlayer) + m_iTeamNum);
+	return teamNumber != *(int*)(DWORD64(myPlayer) + m_iTeamNum); // !!!
 }

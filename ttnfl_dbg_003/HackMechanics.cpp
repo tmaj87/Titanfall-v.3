@@ -27,6 +27,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	int targetCursor = 0;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
 	//
+	ExtendedPlayerClass* playerList[32];
+	//
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 	{
