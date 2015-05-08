@@ -8,6 +8,9 @@ public:
 	static void pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRepaint, bool bAllowForce);
 private:
 	static VPANEL mstp;
+	static int mstpWidth;
+	static int mstpHeight;
+
 	static void initPanel(IPanel* pThis, VPANEL vguiPanel);
 	static bool isAboutMeAvailable();
 	static bool isCorrectPanel(IPanel* pThis, VPANEL vguiPanel);

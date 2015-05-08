@@ -9,6 +9,8 @@ const float __AIMBOT_DIVIDE_BY = 2.1;
 float const MAX_AIM_DISTANCE = 100;
 
 VPANEL HackMechanics::mstp;
+int HackMechanics::mstpWidth;
+int HackMechanics::mstpHeight;
 
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
@@ -22,13 +24,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3];
 	static Vector vecEnemyAimPosition;
 	int targetCursor = 0;
-	static int TARGET_ARRAY_SIZE = 32;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
-	//
-
-	static int w, h;
-	core->g_pIPanel->GetSize(vguiPanel, w, h);
-
 	//
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
@@ -135,8 +131,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
 				//
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
-					pow(double(w / 2 - hisHeadIn2D.x), 2.0) +
-					pow(double(h / 2 - hisHeadIn2D.y), 2.0));
+					pow(double(mstpWidth / 2 - hisHeadIn2D.x), 2.0) +
+					pow(double(mstpHeight / 2 - hisHeadIn2D.y), 2.0));
 				
 				if (__DEBUG)
 				{
@@ -246,6 +242,7 @@ void HackMechanics::initPanel(IPanel* pThis, VPANEL vguiPanel)
 	if (!strcmp(pThis->GetName(vguiPanel), "MatSystemTopPanel") && pThis->GetParent(vguiPanel) == 0)
 	{
 		mstp = vguiPanel;
+		core->g_pIPanel->GetSize(vguiPanel, mstpWidth, mstpHeight);
 	}
 }
 
