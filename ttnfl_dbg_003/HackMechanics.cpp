@@ -5,24 +5,10 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte __AIMBOT_KEY = VK_LBUTTON;
-const float __AIMBOT_DIVIDE_BY = 1.7;
-float const MAX_AIM_DISTANCE = 120;
+const float __AIMBOT_DIVIDE_BY = 2.1;
+float const MAX_AIM_DISTANCE = 100;
 
 VPANEL HackMechanics::mstp;
-
-HackMechanics::HackMechanics()
-{
-}
-
-
-HackMechanics::~HackMechanics()
-{
-}
-
-void HackMechanics::aimAtThisPlayer(CBaseEntity* player)
-{
-	//
-}
 
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
@@ -117,11 +103,11 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			core->g_pSurface->DrawSetColor(0, 255, 0, 40);
 		}
 
-		drawByType(player, type, distFromMe, isEnemy, a);
+		draw->byType(player, type, distFromMe, isEnemy, a);
 
 		if (RADAR_SWITCH && type != 3)
 		{
-			myHack->drawOnRadar(screenPos);
+			draw->onRadar(screenPos);
 		}
 
 		// aimbot &...
@@ -144,7 +130,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				deltaVector[0] = enemyAimPosition[0] - myEyes[0];
 				deltaVector[1] = enemyAimPosition[1] - myEyes[1];
 				deltaVector[2] = enemyAimPosition[2] - myEyes[2];
-				CoreHaxFunc::VectorAngles(deltaVector, vectorAngle);
+				core->VectorAngles(deltaVector, vectorAngle);
 				//
 				myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
 				//
@@ -165,8 +151,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 		if (__DEBUG)
 		{
-			myHack->drawStatLn();
-			myHack->drawDebug();
+			draw->statLn();
+			draw->debug();
 
 			//myHack->getHead(player, enemyAimPosition);
 			//if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), screenPos))
@@ -229,7 +215,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
 				uberStruct.bufferedAngles.y = (uberStruct.aimAt[1] - pCmd->viewangles.y) / __AIMBOT_DIVIDE_BY;
 
-				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < 10)
+				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < 12)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
@@ -288,11 +274,11 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 		return;
 	}
 
-	CoreHaxFunc::keyManager();
+	core->keyManager();
 
 	if (!MAIN_SWITCH)
 	{
-		myHack->drawOff();
+		draw->off();
 		if (__DEBUG)
 		{
 			__DEBUG = 0;
@@ -302,33 +288,8 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 
 	if (CROSSHAIR_SWITCH)
 	{
-		myHack->inTheMiddle(vguiPanel);
+		draw->inTheMiddle(vguiPanel);
 	}
 
 	playersLoop(vguiPanel);
-}
-
-void HackMechanics::drawByType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)
-{
-	switch (type)
-	{
-	case 1: // player
-		myHack->drawPlayer(player, distFromMe, isEnemy);
-		break;
-	case 2: // titan
-		if (isEnemy)
-		{
-			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
-		}
-		myHack->drawTitan(player, distFromMe, isEnemy);
-		break;
-	case 3: // minon
-		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
-		{
-			return;
-		}
-		core->g_pSurface->DrawSetColor(255, 255, 0, alpha);
-		myHack->drawMinion(player, distFromMe, isEnemy);
-		break;
-	}
 }

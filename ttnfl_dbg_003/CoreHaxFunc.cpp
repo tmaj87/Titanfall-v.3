@@ -1,5 +1,66 @@
 #include "header.h"
 
+tPlat_FloatTime Plat_FloatTime;
+
+CoreHaxFunc::CoreHaxFunc()
+{
+	debug = new dbg();
+	debug->cleanFile();
+	initFaces();
+}
+
+void CoreHaxFunc::initFaces()
+{
+	// wait till modules load
+	while (hEngine == NULL)
+	{
+		hEngine = GetModuleHandle("engine.dll");
+		Sleep(100);
+	}
+	while (hClient == NULL)
+	{
+		hClient = GetModuleHandle("client.dll");
+		Sleep(100);
+	}
+	while (hVGui == NULL)
+	{
+		hVGui = GetModuleHandle("vguimatsurface.dll");
+		Sleep(100);
+	}
+	while (hVGui2 == NULL)
+	{
+		hVGui2 = GetModuleHandle("vgui2.dll");
+		Sleep(100);
+	}
+	while (hTier0 == NULL)
+	{
+		hTier0 = GetModuleHandle("tier0.dll");
+		Sleep(100);
+	}
+
+	// funny way of doing this
+	g_pEngineFactory = (tCreateInterface)GetProcAddress(hEngine, "CreateInterface");
+	g_ClientFactory = (tCreateInterface)GetProcAddress(hClient, "CreateInterface");
+	g_VGUIFactory = (tCreateInterface)GetProcAddress(hVGui, "CreateInterface");
+	g_VGUI2Factory = (tCreateInterface)GetProcAddress(hVGui2, "CreateInterface");
+
+	// ...
+	g_pEngine = (EngineClient*)g_pEngineFactory("VEngineClient013", NULL);
+	g_pTrace = (IEngineTrace*)g_pEngineFactory("EngineTraceClient004", NULL);
+	g_pEntList = (CEntList*)g_ClientFactory("VClientEntityList003", NULL);
+	g_pSurface = (ISurface*)g_VGUIFactory("VGUI_Surface031", NULL);
+	g_pIPanel = (IPanel*)g_VGUI2Factory("VGUI_Panel009", NULL);
+	//g_pDebug = (IVDebugOverlay*)g_pEngineFactory("VDebugOverlay004", NULL);
+	g_pClient = (IBaseClientDLL*)g_ClientFactory("VClient018", NULL);
+	Plat_FloatTime = (tPlat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
+
+	if (SHOW_DEBUG)
+	{
+		sprintf_s(__DEBUG_BUFF, "g_pTrace: %p", g_pTrace);
+		debug->toFile(__DEBUG_BUFF);
+	}
+}
+
 void CoreHaxFunc::keyManager()
 {
 	const byte MAIN_SWITCH_KEY = VK_F5;
@@ -70,18 +131,13 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 	}
 }
 
-
-
 bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, Vector &posToWrite)
 {
-	//player_info_t pinfo;
 	Trace tr;
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
 	core->g_pTrace->TraceRay(ray, 0x4600400B, 0, &tr); // 0x46004003
 
-	/*if (tr.allsolid || tr.startsolid)
-		return false;*/
 	/*if (tr.m_pEnt && tr.m_pEnt == pTargetPlayer)
 		return true;*/
 
@@ -93,20 +149,4 @@ bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, Vector
 		return true;
 
 	return false;
-
-	/*
-	if (tr.fraction > 0.97f)
-	{
-		return true;
-	}
-	return false;
-
-	if (tr.m_pEnt && baseEnt)
-	{
-		if (tr.m_pEnt->index == 0 || tr.allsolid)
-			return false;
-		if ((GEngine->GetPlayerInfo(tr.m_pEnt->index, &pinfo)
-			|| baseEnt->index == tr.m_pEnt->index) && tr.fraction > 0.92)
-			return true;
-	*/
 }

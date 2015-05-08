@@ -14,13 +14,18 @@
 #include "CoreHaxFunc.h"
 #include "HackMechanics.h"
 #include "ExtendedPlayerClass.h"
+#include "DrawStuff.h"
 
 extern tPaintTraverse oPaintTraverse;
 extern tCreateMove oCreateMove;
 extern cvmth64* VMThook;
 extern cvmth64* VMThook2;
-extern base* core;
 extern hack* myHack;
+extern CoreHaxFunc* core;
+extern DrawStuff* draw;
+extern tPlat_FloatTime Plat_FloatTime;
+extern CBaseEntity* myPlayer;
+extern myStruct uberStruct;
 
 extern bool __DEBUG;
 extern char __DEBUG_BUFF[512];

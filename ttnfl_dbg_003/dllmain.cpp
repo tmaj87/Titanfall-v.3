@@ -4,9 +4,9 @@ tPaintTraverse oPaintTraverse;
 tCreateMove oCreateMove;
 cvmth64* VMThook;
 cvmth64* VMThook2;
-base* core;
+CoreHaxFunc* core;
 hack* myHack;
-HackMechanics* hackEngine;
+DrawStuff* draw;
 
 bool __DEBUG = 0;
 char __DEBUG_BUFF[512];
@@ -21,11 +21,12 @@ void DoMeAFavour()
 	VMThook = new cvmth64();
 	VMThook2 = new cvmth64();
 
-	core = new base();
+	core = new CoreHaxFunc();
 	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
 	{
 		oPaintTraverse = (tPaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, 46);
 		myHack = new hack();
+		draw = new DrawStuff();
 
 		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
 		{
