@@ -5,8 +5,17 @@
 class ExtendedPlayerClass
 {
 public:
-	ExtendedPlayerClass(CBaseEntity*);
+	int health;
+	int maxHealth;
+	int lifeState;
+	int index;
+	int teamNumber;
+	bool enemy;
+
+	//ExtendedPlayerClass(CBaseEntity*);
+	ExtendedPlayerClass(CBaseEntity*, int);
+	bool isEnemy();
 private:
-	//
+	CBaseEntity* player;
 };
 

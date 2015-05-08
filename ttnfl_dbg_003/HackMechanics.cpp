@@ -7,6 +7,7 @@ myStruct uberStruct;
 const byte __AIMBOT_KEY = VK_LBUTTON;
 const float __AIMBOT_DIVIDE_BY = 2.1;
 float const MAX_AIM_DISTANCE = 100;
+float const AUTO_AIM_DISTANCE = 12;
 
 VPANEL HackMechanics::mstp;
 int HackMechanics::mstpWidth;
@@ -211,7 +212,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
 				uberStruct.bufferedAngles.y = (uberStruct.aimAt[1] - pCmd->viewangles.y) / __AIMBOT_DIVIDE_BY;
 
-				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < 12)
+				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < AUTO_AIM_DISTANCE)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;

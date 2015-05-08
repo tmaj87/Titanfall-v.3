@@ -12,8 +12,8 @@ private:
 	static int mstpHeight;
 
 	static void initPanel(IPanel* pThis, VPANEL vguiPanel);
-	static bool isAboutMeAvailable();
 	static bool isCorrectPanel(IPanel* pThis, VPANEL vguiPanel);
+	static bool isAboutMeAvailable();
 	static void playersLoop(VPANEL vguiPanel);
 };
 
