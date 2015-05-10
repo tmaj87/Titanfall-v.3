@@ -4,10 +4,10 @@ int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
 
-const byte __AIMBOT_KEY = VK_LBUTTON;
-const float __AIMBOT_DIVIDE_BY = 2.1;
-float const MAX_AIM_DISTANCE = 100;
-float const AUTO_AIM_DISTANCE = 12;
+const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
+const float AIMBOT_DIVIDE_BY = 1.3;
+float const AIMBOT_MAX_DISTANCE = 60;
+float const AIMBOT_AUTO_DISTANCE = 12;
 
 VPANEL HackMechanics::mstp;
 int HackMechanics::mstpWidth;
@@ -147,36 +147,24 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				targetCursor++;
 			}
 		}
-
-		if (__DEBUG)
-		{
-			draw->statLn();
-			draw->debug();
-
-			//myHack->getHead(player, enemyAimPosition);
-			//if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), screenPos))
-			//{
-				/*
-				swprintf_s(__DEBUG_BUFF_W, L"visible");
-				core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
-				core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-				*/
-			//}
-		}
+		//myHack->getHead(player, enemyAimPosition);
+		//if (CoreHaxFunc::visibilityCheck(Vector(myEyes[0], myEyes[1], myEyes[2]), Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), screenPos))
+		//{
+		/*
+		swprintf_s(__DEBUG_BUFF_W, L"visible");
+		core->g_pSurface->DrawSetTextPos(screenPos.x, screenPos.y);
+		core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+		*/
+		//}
 	}
 
 	// aimbot..!
 	if (targetCursor > 0)
 	{
-		uberStruct.aimAt[2] = 0;
 		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D());
 		uberStruct.enemyDistance2D = myEnemiesList[0].distance2D;
 		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
 		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
-		if (myEnemiesList[0].distance2D < MAX_AIM_DISTANCE)
-		{
-			uberStruct.aimAt[2] = 1;
-		}
 	}
 
 	targetCursor = 0;
@@ -210,11 +198,22 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 			CUserCmd* pCmd = pInput->GetUserCmd(0, sequence_number);
 			if (pCmd)
 			{
-				uberStruct.viewAngles = pCmd->viewangles;
-				uberStruct.bufferedAngles.x = (uberStruct.aimAt[0] - pCmd->viewangles.x) / __AIMBOT_DIVIDE_BY;
-				uberStruct.bufferedAngles.y = (uberStruct.aimAt[1] - pCmd->viewangles.y) / __AIMBOT_DIVIDE_BY;
+				static float tmpAngles[2];
 
-				if (AIMBOT_SWITCH && (uberStruct.aimAt[2] && GetAsyncKeyState(__AIMBOT_KEY) & 0x8000) || uberStruct.enemyDistance2D < AUTO_AIM_DISTANCE)
+				uberStruct.viewAngles = pCmd->viewangles;
+				//
+				// random jump to 180..!
+				//..80?
+				//
+				tmpAngles[0] = (uberStruct.aimAt[0] - pCmd->viewangles.x);
+				tmpAngles[1] = (uberStruct.aimAt[1] - pCmd->viewangles.y);
+				uberStruct.bufferedAngles.x = tmpAngles[0] / AIMBOT_DIVIDE_BY;
+				uberStruct.bufferedAngles.y = tmpAngles[1] / AIMBOT_DIVIDE_BY;
+
+				if (AIMBOT_SWITCH &&
+					(GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000 && uberStruct.enemyDistance2D < AIMBOT_MAX_DISTANCE)
+					|| uberStruct.enemyDistance2D < AIMBOT_AUTO_DISTANCE
+					)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
@@ -292,4 +291,10 @@ void __fastcall HackMechanics::pt(IPanel* pThis, VPANEL vguiPanel, bool bForceRe
 	}
 
 	playersLoop(vguiPanel);
+
+	if (__DEBUG)
+	{
+		draw->statLn();
+		draw->debug();
+	}
 }
