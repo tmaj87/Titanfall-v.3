@@ -5,8 +5,8 @@ CBaseEntity* myPlayer;
 myStruct uberStruct;
 
 const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
-const float AIMBOT_DIVIDE_BY = 1.3;
-float const AIMBOT_MAX_DISTANCE = 60;
+const float AIMBOT_DIVIDE_BY = 2.1;
+float const AIMBOT_MAX_DISTANCE = 80;
 float const AIMBOT_AUTO_DISTANCE = 12;
 
 VPANEL HackMechanics::mstp;
@@ -139,9 +139,9 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				
 				if (__DEBUG)
 				{
-					swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
-					core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
-					core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
+					//swprintf_s(__DEBUG_BUFF_W, L"%.0f", myEnemiesList[targetCursor].distance2D);
+					//core->g_pSurface->DrawSetTextPos(hisHeadIn2D.x, hisHeadIn2D.y);
+					//core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
 				}
 
 				targetCursor++;
@@ -219,6 +219,29 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
 				}
 
+				/*
+				//
+				// if shots fired > 1
+				if (GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000)
+				{
+					Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchBase_Angle);
+					Vector punchVecVel = *(Vector*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
+
+					float newPunch[2] = { punchVec.x - uberStruct.lastPunch[0], punchVec.y - uberStruct.lastPunch[1] };
+
+					pCmd->viewangles.x -= newPunch[0] * punchVecVel[0];
+					pCmd->viewangles.y -= newPunch[1] * punchVecVel[1];
+
+					uberStruct.lastPunch[0] = punchVec.x * punchVecVel.z;
+					uberStruct.lastPunch[1] = punchVec.y * punchVecVel.y;
+				}
+				else
+				{
+					// zero out lastPunch
+					uberStruct.lastPunch[0] = 0;
+					uberStruct.lastPunch[1] = 0;
+				}
+				*/
 			}
 		}
 	}

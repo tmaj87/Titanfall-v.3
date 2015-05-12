@@ -21,6 +21,7 @@ struct myStruct {
 	QAngle bufferedAngles;
 	float aimAt[3];
 	float enemyDistance2D;
+	float lastPunch[3];
 	myStruct()
 	{
 		aimAt[0] = 0;

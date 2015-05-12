@@ -218,6 +218,17 @@ void DrawStuff::debug()
 	swprintf_s(buff, L"uberStruct.aimAt: x:%.0f,y:%.0f", uberStruct.aimAt[0], uberStruct.aimAt[1]);
 	core->g_pSurface->DrawSetTextPos(10, 240);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+
+	Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchBase_Angle);
+	Vector punchVecVel = *(Vector*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
+
+	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", punchVec.x, punchVec.y);
+	core->g_pSurface->DrawSetTextPos(10, 260);
+	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
+
+	swprintf_s(buff, L"punchVecVel: x:%.2f,y:%.2f", punchVecVel.x, punchVecVel.y);
+	core->g_pSurface->DrawSetTextPos(10, 280);
+	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 }
 
 
