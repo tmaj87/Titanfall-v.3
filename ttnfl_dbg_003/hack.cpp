@@ -43,7 +43,7 @@ void hack::getMatrix()
 	m_vMatrix = pRender->GetWorldToScreenMatrix();
 }
 
-void hack::getHead(CBaseEntity* player, float* posToWrite)
+void hack::getHead(CBaseEntity* player, Vector* posToWrite)
 {
 	static matrix3x4 boneList[128];
 	static int boneId = 12;
@@ -54,21 +54,25 @@ void hack::getHead(CBaseEntity* player, float* posToWrite)
 		{
 			boneId = 11;
 		}
-		posToWrite[0] = boneList[boneId][0][3];
-		posToWrite[1] = boneList[boneId][1][3];
-		posToWrite[2] = boneList[boneId][2][3];
+
+		posToWrite = new Vector(
+			boneList[boneId][0][3],
+			boneList[boneId][1][3],
+			boneList[boneId][2][3]
+		);
 	}
 }
 
-// gets 128 bones...
-void hack::getBonePos(CBaseEntity* player, int boneId, float* posToWrite)
+void hack::getBonePos(CBaseEntity* player, int boneId, Vector* posToWrite)
 {
 	static matrix3x4 boneList[128];
 
 	if (player->SetupBones(boneList, 128, 256, PlatFloatTime()))
 	{
-		posToWrite[0] = boneList[boneId][0][3];
-		posToWrite[1] = boneList[boneId][1][3];
-		posToWrite[2] = boneList[boneId][2][3];
+		posToWrite = new Vector(
+			boneList[boneId][0][3],
+			boneList[boneId][1][3],
+			boneList[boneId][2][3]
+		);
 	}
 }

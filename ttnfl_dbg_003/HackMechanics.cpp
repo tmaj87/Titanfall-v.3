@@ -22,8 +22,8 @@ int HackMechanics::matSystemTopPanelHeight;
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
 	// aim part
-	static float aimAngle[3], vectorAngle[3], deltaVector[3], enemyAimPosition[3]; // ffs, do it with Vector
-	static Vector vecEnemyAimPosition;
+	static float aimAngle[3], vectorAngle[3]; // ffs, do it with Vector
+	static Vector enemyAimPosition, deltaVec;
 	int targetCursor = 0;
 	TargetList* myEnemiesList = new TargetList[32];
 
@@ -87,20 +87,18 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			{
 				static int randomBone;
 				randomBone = rand() % 3 + 9;
-				myHack->getBonePos(plyr.player, randomBone, enemyAimPosition); // arg0: plyr.position?
+				myHack->getBonePos(plyr.player, randomBone, &enemyAimPosition); // arg0: plyr.position?
 			}
 			else
 			{
-				myHack->getHead(plyr.player, enemyAimPosition); // arg0: plyr.position?
+				myHack->getHead(plyr.player, &enemyAimPosition); // arg0: plyr.position?
 			}
 
-			if (myHack->worldToScreen(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
+			if (myHack->worldToScreen(enemyAimPosition, hisHeadIn2D))
 			{
-				// vector subtraction
-				deltaVector[0] = enemyAimPosition[0] - myPlyr.eyesPositon[0];
-				deltaVector[1] = enemyAimPosition[1] - myPlyr.eyesPositon[1];
-				deltaVector[2] = enemyAimPosition[2] - myPlyr.eyesPositon[2];
-				core->VectorAngles(deltaVector, vectorAngle);
+				deltaVec = enemyAimPosition - myPlyr.eyesPositon;
+				float deltaFlo[3] = {deltaVec[0], deltaVec[1], deltaVec[2]};
+				core->VectorAngles(deltaFlo, vectorAngle);
 				//
 				myEnemiesList[targetCursor] = TargetList(vectorAngle, myPlyr.eyesPositon, enemyAimPosition);
 				//

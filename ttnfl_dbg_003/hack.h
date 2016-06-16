@@ -8,8 +8,8 @@ public:
 	float getDist(Vector&, Vector&);
 	bool worldToScreen(Vector&, Vector&);
 	void getMatrix();
-	void getHead(CBaseEntity*, float*);
-	void getBonePos(CBaseEntity*, int, float*);
+	void getHead(CBaseEntity*, Vector*);
+	void getBonePos(CBaseEntity*, int, Vector*);
 private:
 	matrix3x4* m_vMatrix;
 };

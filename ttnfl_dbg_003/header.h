@@ -52,7 +52,7 @@ struct TargetList
 	{
 	}
 
-	TargetList(float aimbotAngle[], Vector myCoords, float enemyCoords[])
+	TargetList(float aimbotAngle[], Vector myCoords, Vector enemyCoords)
 	{
 		AimbotAngle[0] = aimbotAngle[0];
 		AimbotAngle[1] = aimbotAngle[1];
