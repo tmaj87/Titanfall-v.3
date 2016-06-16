@@ -174,11 +174,12 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number, float input_sample_frametime, bool active)
 {
+	static CInput* pInput;
+
 	oCreateMove(ptr, sequence_number, input_sample_frametime, active);
+
 	if (active == 1 && MAIN_SWITCH)
 	{
-		static CInput* pInput;
-
 		bool static once = 0; // findPointerToCInput();
 		if (!once)
 		{
@@ -205,55 +206,8 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 					return;
 				}
 
-				static float tmpAngles[2];
-
-				//
-				// random jump to 180..!
-				//..80?
-				//
-				tmpAngles[0] = (uberStruct.aimAt[0] - pCmd->viewangles.x);
-				tmpAngles[1] = (uberStruct.aimAt[1] - pCmd->viewangles.y);
-				uberStruct.bufferedAngles.x = tmpAngles[0];
-				uberStruct.bufferedAngles.y = tmpAngles[1];
-
-				if (AIMBOT_SWITCH
-					// && (
-					//	( // isPressingFire();
-					//    GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000
-					//    && uberStruct.enemyDistance2D < AIMBOT_MAX_DISTANCE
-					// )
-					// // isInAutoAimRange_GruntsOnly();
-					// || uberStruct.enemyDistance2D < AIMBOT_AUTO_DISTANCE
-					// )
-					)
-				{
-					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
-					pCmd->viewangles.y += uberStruct.bufferedAngles.y;
-				}
-
-				/*
-				//
-				// if shots fired > 1
-				if (GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000)
-				{
-					Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchBase_Angle);
-					Vector punchVecVel = *(Vector*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
-
-					float newPunch[2] = { punchVec.x - uberStruct.lastPunch[0], punchVec.y - uberStruct.lastPunch[1] };
-
-					pCmd->viewangles.x -= newPunch[0] * punchVecVel[0];
-					pCmd->viewangles.y -= newPunch[1] * punchVecVel[1];
-
-					uberStruct.lastPunch[0] = punchVec.x * punchVecVel.z;
-					uberStruct.lastPunch[1] = punchVec.y * punchVecVel.y;
-				}
-				else
-				{
-					// zero out lastPunch
-					uberStruct.lastPunch[0] = 0;
-					uberStruct.lastPunch[1] = 0;
-				}
-				*/
+				pCmd->viewangles.x += uberStruct.aimAt[0] - pCmd->viewangles.x;
+				pCmd->viewangles.y += uberStruct.aimAt[1] - pCmd->viewangles.y;
 			}
 		}
 	}

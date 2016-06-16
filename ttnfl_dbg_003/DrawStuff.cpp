@@ -207,10 +207,6 @@ void DrawStuff::debug()
 
 	core->g_pSurface->DrawSetTextColor(255, 255, 255, 200);
 
-	swprintf_s(buff, L"uberStruct.bufferedAngles.y: x:%.0f,y:%.0f", uberStruct.bufferedAngles.x, uberStruct.bufferedAngles.y);
-	core->g_pSurface->DrawSetTextPos(10, 200);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
 	swprintf_s(buff, L"uberStruct.viewAngles.x: x:%.0f,y:%.0f", uberStruct.viewAngles.x, uberStruct.viewAngles.y);
 	core->g_pSurface->DrawSetTextPos(10, 220);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
@@ -224,10 +220,6 @@ void DrawStuff::debug()
 
 	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", punchVec.x, punchVec.y);
 	core->g_pSurface->DrawSetTextPos(10, 260);
-	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
-
-	swprintf_s(buff, L"punchVecVel: x:%.2f,y:%.2f", punchVecVel.x, punchVecVel.y);
-	core->g_pSurface->DrawSetTextPos(10, 280);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 }
 

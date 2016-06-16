@@ -4,7 +4,7 @@
 class Player
 {
 public:
-	CBaseEntity* player;
+	CBaseEntity* player; // <---
 	int lifeState;
 	int team;
 	int inventory;
