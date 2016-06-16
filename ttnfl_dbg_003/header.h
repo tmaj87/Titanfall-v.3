@@ -42,17 +42,17 @@ typedef struct _PEB_LDR_DATA {
 	LIST_ENTRY InMemoryOrderModuleList;
 } PEB_LDR_DATA, *PPEB_LDR_DATA;
 
-struct TargetList_t
+struct TargetList
 {
 	float distance3D;
 	float distance2D;
 	float AimbotAngle[3];
 
-	TargetList_t()
+	TargetList()
 	{
 	}
 
-	TargetList_t(float aimbotAngle[], float myCoords[], float enemyCoords[])
+	TargetList(float aimbotAngle[], float myCoords[], float enemyCoords[])
 	{
 		AimbotAngle[0] = aimbotAngle[0];
 		AimbotAngle[1] = aimbotAngle[1];
@@ -71,17 +71,17 @@ struct TargetList_t
 	}
 };
 
-struct CompareTargetEnArray2D
+struct CompareTargetsIn2D
 {
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	bool operator() (TargetList & lhs, TargetList & rhs)
 	{
 		return lhs.distance2D < rhs.distance2D;
 	}
 };
 
-struct CompareTargetEnArray3D
+struct CompareTargetsIn3D
 {
-	bool operator() (TargetList_t & lhs, TargetList_t & rhs)
+	bool operator() (TargetList & lhs, TargetList & rhs)
 	{
 		return lhs.distance3D < rhs.distance3D;
 	}

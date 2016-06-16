@@ -22,10 +22,10 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	static byte type, isEnemy, a;
  
 	// aim part
-	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3];
+	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3]; // ffs, do it with Vector
 	static Vector vecEnemyAimPosition;
 	int targetCursor = 0;
-	TargetList_t* myEnemiesList = new TargetList_t[32];
+	TargetList* myEnemiesList = new TargetList[32];
 	//
 	//
 	ExtendedPlayerClass* playerList[32];
@@ -91,8 +91,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			a = 0;
 		}
 
-		// set color
-		if (isEnemy)
+		if (isEnemy) // setPlayerColor();
 		{
 			core->g_pSurface->DrawSetColor(255, 0, 0, a);
 		}
@@ -130,11 +129,12 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				deltaVector[2] = enemyAimPosition[2] - myEyes[2];
 				core->VectorAngles(deltaVector, vectorAngle);
 				//
-				myEnemiesList[targetCursor] = TargetList_t(vectorAngle, myEyes, enemyAimPosition);
+				myEnemiesList[targetCursor] = TargetList(vectorAngle, myEyes, enemyAimPosition);
 				//
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
 					pow(double(mstpWidth / 2 - hisHeadIn2D.x), 2.0) +
-					pow(double(mstpHeight / 2 - hisHeadIn2D.y), 2.0));
+					pow(double(mstpHeight / 2 - hisHeadIn2D.y), 2.0)
+				);
 				
 				if (__DEBUG)
 				{
@@ -160,7 +160,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	// aimbot..!
 	if (targetCursor > 0)
 	{
-		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetEnArray2D());
+		// pickNearestTargetIn2D();
+		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetsIn2D());
 		uberStruct.enemyDistance2D = myEnemiesList[0].distance2D;
 		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
 		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
@@ -178,7 +179,7 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 	{
 		static CInput* pInput;
 
-		int static once = 0;
+		bool static once = 0; // findPointerToCInput();
 		if (!once)
 		{
 			DWORD_PTR dwFunc1 = (DWORD_PTR)oCreateMove + 0x27;
@@ -192,14 +193,20 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 			once = 1;
 		}
 
+
 		if (pInput)
 		{
 			CUserCmd* pCmd = pInput->GetUserCmd(0, sequence_number);
 			if (pCmd)
 			{
+				uberStruct.viewAngles = pCmd->viewangles;
+
+				if (!AIMBOT_SWITCH) {
+					return;
+				}
+
 				static float tmpAngles[2];
 
-				uberStruct.viewAngles = pCmd->viewangles;
 				//
 				// random jump to 180..!
 				//..80?
