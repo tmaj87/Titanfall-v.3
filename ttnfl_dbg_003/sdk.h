@@ -1,7 +1,7 @@
 #pragma once
 #include "vector.h"
 
-#define IN_ATTACK		(1 << 0)
+#define IN_ATTACK (1 << 0)
 
 inline void**& getvtable(void* inst, size_t offset = 0)
 {
@@ -19,7 +19,6 @@ inline Fn getvfunc(const void* inst, size_t index, size_t offset = 0)
 
 typedef unsigned int VPANEL;
 typedef float matrix3x4[3][4];
-typedef Vector VectorAligned;
 
 typedef struct player_info_s {
 	char    _0x0000[0x0008];    // 0x0000

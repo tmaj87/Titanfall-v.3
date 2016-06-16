@@ -15,6 +15,7 @@
 #include "HackMechanics.h"
 #include "ExtendedPlayerClass.h"
 #include "DrawStuff.h"
+#include "Player.h"
 
 extern tPaintTraverse oPaintTraverse;
 extern tCreateMove oCreateMove;

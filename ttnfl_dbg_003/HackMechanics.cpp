@@ -4,8 +4,8 @@ int myPlayerIdx;
 CBaseEntity* myPlayer;
 myStruct uberStruct;
 
+// aimbot..!
 const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
-const float AIMBOT_DIVIDE_BY = 2.1;
 float const AIMBOT_MAX_DISTANCE = 80;
 float const AIMBOT_AUTO_DISTANCE = 12;
 
@@ -27,6 +27,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	int targetCursor = 0;
 	TargetList_t* myEnemiesList = new TargetList_t[32];
 	//
+	//
 	ExtendedPlayerClass* playerList[32];
 	//
 
@@ -35,8 +36,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		player = core->g_pEntList->GetClientEntity(i);
 
 		if (
-			player == NULL
-			|| i == myPlayerIdx
+			player == NULL // struct player {int lifeState, int team, int inventory}
+			|| i == myPlayerIdx // take mem pointer in constructor
 			|| *(int*)(DWORD64(player) + m_lifeState) != 0
 			|| *(int*)(DWORD64(player) + m_iTeamNum) == 0
 			|| *(int*)(DWORD64(player) + m_inventory) == 0
@@ -61,21 +62,6 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			continue;
 		}
 
-		distFromMe = myHack->getDist(myPlayer->GetAbsOrigin(), playerPos);
-		if (distFromMe < 5000)
-		{
-			// set alpha
-			a = 255 - distFromMe / 20;
-			if (a < 60)
-			{
-				a = 60;
-			}
-		}
-		else
-		{
-			a = 0;
-		}
-
 		// get player type
 		type = 1;
 		core->g_pEngine->GetPlayerInfo(i, &pInfo);
@@ -91,6 +77,19 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		// is enemy?
 		isEnemy = *(int*)(DWORD64(player) + m_iTeamNum) != *(int*)(DWORD64(myPlayer) + m_iTeamNum);
 
+		distFromMe = myHack->getDist(myPlayer->GetAbsOrigin(), playerPos);
+		if (distFromMe < 5000) // setDrawAlpha();
+		{
+			a = 255 - distFromMe / 20;
+			if (a < 60)
+			{
+				a = 60;
+			}
+		}
+		else
+		{
+			a = 0;
+		}
 
 		// set color
 		if (isEnemy)
@@ -207,12 +206,18 @@ void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number,
 				//
 				tmpAngles[0] = (uberStruct.aimAt[0] - pCmd->viewangles.x);
 				tmpAngles[1] = (uberStruct.aimAt[1] - pCmd->viewangles.y);
-				uberStruct.bufferedAngles.x = tmpAngles[0] / AIMBOT_DIVIDE_BY;
-				uberStruct.bufferedAngles.y = tmpAngles[1] / AIMBOT_DIVIDE_BY;
+				uberStruct.bufferedAngles.x = tmpAngles[0];
+				uberStruct.bufferedAngles.y = tmpAngles[1];
 
-				if (AIMBOT_SWITCH &&
-					(GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000 && uberStruct.enemyDistance2D < AIMBOT_MAX_DISTANCE)
-					|| uberStruct.enemyDistance2D < AIMBOT_AUTO_DISTANCE
+				if (AIMBOT_SWITCH
+					// && (
+					//	( // isPressingFire();
+					//    GetAsyncKeyState(AIMBOT_PRESS_KEY) & 0x8000
+					//    && uberStruct.enemyDistance2D < AIMBOT_MAX_DISTANCE
+					// )
+					// // isInAutoAimRange_GruntsOnly();
+					// || uberStruct.enemyDistance2D < AIMBOT_AUTO_DISTANCE
+					// )
 					)
 				{
 					pCmd->viewangles.x += uberStruct.bufferedAngles.x;
