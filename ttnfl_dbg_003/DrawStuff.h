@@ -28,5 +28,5 @@ public:
 	void stat();
 	void statLn();
 	void allBones(CBaseEntity*, int, int);
-	void byType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
+	void drawMarkBasedOnType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
 };

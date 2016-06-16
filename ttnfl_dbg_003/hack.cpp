@@ -72,12 +72,3 @@ void hack::getBonePos(CBaseEntity* player, int boneId, float* posToWrite)
 		posToWrite[2] = boneList[boneId][2][3];
 	}
 }
-
-void hack::getEyePosition(CBaseEntity* player, float* returnAngles)
-{
-	Vector vect1 = player->GetAbsOrigin();
-	
-	returnAngles[0] = vect1.x;
-	returnAngles[1] = vect1.y;
-	returnAngles[2] = vect1.z + *(float*)(player + m_vecViewOffset_z);
-}

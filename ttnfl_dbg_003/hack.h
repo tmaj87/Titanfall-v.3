@@ -10,7 +10,6 @@ public:
 	void getMatrix();
 	void getHead(CBaseEntity*, float*);
 	void getBonePos(CBaseEntity*, int, float*);
-	void getEyePosition(CBaseEntity* player, float* returnAngles);
 private:
 	matrix3x4* m_vMatrix;
 };

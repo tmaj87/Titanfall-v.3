@@ -24,7 +24,6 @@ extern hack* myHack;
 extern CoreHaxFunc* core;
 extern DrawStuff* draw;
 extern Plat_FloatTime PlatFloatTime;
-extern CBaseEntity* myPlayer;
 extern Player myPlyr;
 extern int myPlayerIdx;
 extern myStruct uberStruct;

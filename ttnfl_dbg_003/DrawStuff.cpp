@@ -70,7 +70,7 @@ void DrawStuff::pilot(CBaseEntity* player, float distance, byte isEnemy)
 	}
 }
 
-void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)
+void DrawStuff::drawMarkBasedOnType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte alpha)
 {
 	switch (type)
 	{
@@ -202,10 +202,7 @@ void DrawStuff::debug()
 	core->g_pSurface->DrawSetTextPos(10, 240);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	Vector punchVec = *(Vector*)(myPlayer + m_local + m_vecPunchBase_Angle);
-	Vector punchVecVel = *(Vector*)(myPlayer + m_local + m_vecPunchBase_AngleVel);
-
-	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", punchVec.x, punchVec.y);
+	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", myPlyr.punchVec.x, myPlyr.punchVec.y);
 	core->g_pSurface->DrawSetTextPos(10, 260);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 }

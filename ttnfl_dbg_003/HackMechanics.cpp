@@ -1,16 +1,14 @@
 #include "header.h"
 
 int myPlayerIdx;
-CBaseEntity* player;
-CBaseEntity* myPlayer;
 Player plyr;
 Player myPlyr;
 myStruct uberStruct;
 
-Vector playerPos, screenPos, hisHeadIn2D;
-playerInfo pInfo;
+Vector screenPos, hisHeadIn2D;
+
 float distFromMe;
-byte type, isEnemy, a;
+byte a;
 
 // aimbot..!
 const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
@@ -24,7 +22,7 @@ int HackMechanics::matSystemTopPanelHeight;
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
 	// aim part
-	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3]; // ffs, do it with Vector
+	static float aimAngle[3], vectorAngle[3], deltaVector[3], enemyAimPosition[3]; // ffs, do it with Vector
 	static Vector vecEnemyAimPosition;
 	int targetCursor = 0;
 	TargetList* myEnemiesList = new TargetList[32];
@@ -34,7 +32,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 	{
 		plyr = Player(i);
 
-		if (i == myPlayerIdx || plyr.check())
+		if (i == myPlayerIdx || !plyr.check())
 		{
 			continue;
 		}
@@ -47,29 +45,12 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			matrixCached = 1;
 		}
 
-		myHack->getEyePosition(myPlayer, myEyes);
-
-		playerPos = player->GetAbsOrigin();
-		if (!myHack->worldToScreen(playerPos, screenPos))
+		if (!myHack->worldToScreen(plyr.position, screenPos))
 		{
 			continue;
 		}
 
-		type = PLAYER;
-		core->g_pEngine->GetPlayerInfo(i, &pInfo);
-		if (strlen(pInfo.name) < 6)
-		{
-			type = MINION;
-		}
-		if (*(int*)(DWORD64(player) + m_iHealth) > 700)
-		{
-			type = TITAN;
-		}
-
-		// is enemy?
-		isEnemy = *(int*)(DWORD64(player) + m_iTeamNum) != *(int*)(DWORD64(myPlayer) + m_iTeamNum);
-
-		distFromMe = myHack->getDist(myPlayer->GetAbsOrigin(), playerPos);
+		distFromMe = myHack->getDist(myPlyr.position, plyr.position);
 		if (distFromMe < 5000) // setDrawAlpha();
 		{
 			a = 255 - distFromMe / 20;
@@ -83,7 +64,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			a = 0;
 		}
 
-		if (isEnemy) // setPlayerColor();
+		if (plyr.enemy) // setPlayerColor();
 		{
 			core->g_pSurface->DrawSetColor(255, 0, 0, a);
 		}
@@ -92,36 +73,36 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			core->g_pSurface->DrawSetColor(0, 255, 0, 40);
 		}
 
-		draw->byType(player, type, distFromMe, isEnemy, a);
+		draw->drawMarkBasedOnType(plyr.player, plyr.type, distFromMe, plyr.enemy, a);
 
-		if (RADAR_SWITCH && type != MINION)
+		if (RADAR_SWITCH && plyr.type != MINION)
 		{
 			draw->onRadar(screenPos);
 		}
 
 		// aimbot &...
-		if (isEnemy && type != TITAN)
+		if (plyr.enemy && plyr.type != TITAN)
 		{
-			if (type == 1)
+			if (plyr.type == PLAYER)
 			{
 				static int randomBone;
 				randomBone = rand() % 3 + 9;
-				myHack->getBonePos(player, randomBone, enemyAimPosition);
+				myHack->getBonePos(plyr.player, randomBone, enemyAimPosition); // arg0: plyr.position?
 			}
 			else
 			{
-				myHack->getHead(player, enemyAimPosition);
+				myHack->getHead(plyr.player, enemyAimPosition); // arg0: plyr.position?
 			}
 
 			if (myHack->worldToScreen(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
 			{
 				// vector subtraction
-				deltaVector[0] = enemyAimPosition[0] - myEyes[0];
-				deltaVector[1] = enemyAimPosition[1] - myEyes[1];
-				deltaVector[2] = enemyAimPosition[2] - myEyes[2];
+				deltaVector[0] = enemyAimPosition[0] - myPlyr.eyePos[0];
+				deltaVector[1] = enemyAimPosition[1] - myPlyr.eyePos[1];
+				deltaVector[2] = enemyAimPosition[2] - myPlyr.eyePos[2];
 				core->VectorAngles(deltaVector, vectorAngle);
 				//
-				myEnemiesList[targetCursor] = TargetList(vectorAngle, myEyes, enemyAimPosition);
+				myEnemiesList[targetCursor] = TargetList(vectorAngle, myPlyr.eyePos, enemyAimPosition);
 				//
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
 					pow(double(matSystemTopPanelWidth / 2 - hisHeadIn2D.x), 2.0) +
