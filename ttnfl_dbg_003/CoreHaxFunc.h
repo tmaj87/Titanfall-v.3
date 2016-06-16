@@ -8,10 +8,10 @@ public:
 	HINSTANCE hVGui2;
 	HINSTANCE hTier0;
 
-	tCreateInterface g_pEngineFactory;
-	tCreateInterface g_ClientFactory;
-	tCreateInterface g_VGUIFactory;
-	tCreateInterface g_VGUI2Factory;
+	CreateInterface g_pEngineFactory;
+	CreateInterface g_ClientFactory;
+	CreateInterface g_VGUIFactory;
+	CreateInterface g_VGUI2Factory;
 
 	EngineClient* g_pEngine;
 	CEntList* g_pEntList;

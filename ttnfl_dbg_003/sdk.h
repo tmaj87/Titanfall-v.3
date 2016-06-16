@@ -21,15 +21,15 @@ typedef unsigned int VPANEL;
 typedef float matrix3x4[3][4];
 
 typedef struct player_info_s {
-	char    _0x0000[0x0008];    // 0x0000
-	char    szName[32];            // 0x0008
-	char    _0x0028[0x0228];    // 0x0028
+	char    _0x0000[0x0008];
+	char    szName[32];
+	char    _0x0028[0x0228];
 } player_info_t;
 
-typedef void* (__cdecl* tCreateInterface)(const char*, int*);
-typedef double(__cdecl* tPlat_FloatTime)();
-typedef void* (__thiscall* tPaintTraverse)(void*, VPANEL, bool, bool);
-typedef void* (__thiscall* tCreateMove)(void*, int, float, bool);
+typedef void* (__cdecl* CreateInterface)(const char*, int*);
+typedef double(__cdecl* Plat_FloatTime)();
+typedef void* (__thiscall* PaintTraverse)(void*, VPANEL, bool, bool);
+typedef void* (__thiscall* CreateMove)(void*, int, float, bool);
 
 const DWORD64 m_iHealth = 0x1B8; //ok
 const DWORD64 m_iTeamNum = 0x1D0; // ok
@@ -83,7 +83,7 @@ class CBaseEntity
 public:
 	bool IsDormant() // ???
 	{
-		PVOID pNetworkable = (PVOID)(this + 0x10); // 0x10
+		PVOID pNetworkable = (PVOID)(this + 0x10);
 		typedef bool(__thiscall* OriginalFn)(PVOID);
 		return getvfunc<OriginalFn>(pNetworkable, 8)(pNetworkable);
 	}
@@ -127,20 +127,10 @@ struct QAngle
 
 struct CUserCmd
 {
-	//void* vtable; //0x0000 // no more virtual now i guess whatever
-	int command_number; //0x0000
-	int tick_count; // 0x4
-
-	// I don't know what this is. It's in the frametime position of (my) GlobalVars but it copies it like it's not a float.
-	// addendum: it copies from globalvars + 0x10 (not frametime in Titanfall, but rather some new integer added to the struct)
-	int somethingFromGlobalVars;
-
-	QAngle viewangles; //0x000C 
-	/*char _0x0018[40];
-	int buttons; //0x0040 
-	char _0x0044[8];
-	int random_seed; //0x004C 
-	char _0x0050[220];*/
+	int command_number;
+	int tick_count;
+	int unk001;
+	QAngle viewangles;
 };
 
 class CInput
@@ -152,69 +142,6 @@ public:
 		return getvfunc<OriginalFn>(this, 8)(this, nSlot, seq); // 16
 	}
 };
-
-class Trace
-{
-public:
-	Vector startpos; //0x0000 
-	char _0x000C[4];
-	Vector endpos; //0x0010 
-	char _0x001C[4];
-	Vector normal; //0x0020 
-	float dist; //0x002C 
-	float fraction; //0x0030 
-	char _0x0034[20];
-	char* name; //0x0048 
-	char _0x0050[16];
-	CBaseEntity* m_pEnt; //0x0060 
-	__int64 hitbox; //0x0068 
-};//Size=0x0448  
-
-struct Ray_t
-{
-	__declspec(align(16)) Vector   m_Start;	// starting point, centered within the extents
-	__declspec(align(16)) Vector   m_Delta;	// direction + length of the ray
-	__declspec(align(16)) Vector   m_StartOffset;	// Add this to m_Start to get the actual ray start
-	__declspec(align(16)) Vector   m_Extents;	// Describes an axis aligned box extruded along a ray
-	bool	m_IsRay;	// are the extents zero?
-	bool	m_IsSwept;	// is delta != 0?
-
-	void Init(Vector const& start, Vector const& end)
-	{
-		//Assert(&end);
-		//VectorSubtract(end, start, m_Delta);
-		Vector m_Delta = start - end;
-
-		m_IsSwept = (m_Delta.LengthSqr() != 0);
-
-		VectorClear(m_Extents);
-		m_IsRay = true;
-
-		// Offset m_Start to be in the center of the box...
-		VectorClear(m_StartOffset);
-		VectorCopy(start, m_Start);
-	}
-};
-
-class ITraceFilter
-{
-public:
-};
-
-class IEngineTrace
-{
-public:
-	void TraceRay(const Ray_t &ray, unsigned int fMask, ITraceFilter* pTraceFilter, Trace *pTrace)
-	{
-		typedef void(__thiscall* OriginalFn)(PVOID, const Ray_t, unsigned int, ITraceFilter*, Trace);
-		return getvfunc<OriginalFn>(this, 26)(this, ray, fMask, pTraceFilter, *pTrace);
-		//3,4,5,7,8,9,10,11,13,15,16,19,21,22,24,25,-crash
-		//6,12,14,17,18,20-nothing
-		//6,12,14,17,18,20,23,-no_value
-	}
-};
-
-
 
 class EngineClient
 {

@@ -1,6 +1,6 @@
 #include "header.h"
 
-tPlat_FloatTime Plat_FloatTime;
+Plat_FloatTime Plat_FloatTime;
 
 CoreHaxFunc::CoreHaxFunc()
 {
@@ -39,10 +39,10 @@ void CoreHaxFunc::initFaces()
 	}
 
 	// funny way of doing this
-	g_pEngineFactory = (tCreateInterface)GetProcAddress(hEngine, "CreateInterface");
-	g_ClientFactory = (tCreateInterface)GetProcAddress(hClient, "CreateInterface");
-	g_VGUIFactory = (tCreateInterface)GetProcAddress(hVGui, "CreateInterface");
-	g_VGUI2Factory = (tCreateInterface)GetProcAddress(hVGui2, "CreateInterface");
+	g_pEngineFactory = (CreateInterface)GetProcAddress(hEngine, "CreateInterface");
+	g_ClientFactory = (CreateInterface)GetProcAddress(hClient, "CreateInterface");
+	g_VGUIFactory = (CreateInterface)GetProcAddress(hVGui, "CreateInterface");
+	g_VGUI2Factory = (CreateInterface)GetProcAddress(hVGui2, "CreateInterface");
 
 	// ...
 	g_pEngine = (EngineClient*)g_pEngineFactory("VEngineClient013", NULL);
@@ -52,7 +52,7 @@ void CoreHaxFunc::initFaces()
 	g_pIPanel = (IPanel*)g_VGUI2Factory("VGUI_Panel009", NULL);
 	//g_pDebug = (IVDebugOverlay*)g_pEngineFactory("VDebugOverlay004", NULL);
 	g_pClient = (IBaseClientDLL*)g_ClientFactory("VClient018", NULL);
-	Plat_FloatTime = (tPlat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
+	Plat_FloatTime = (Plat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
 
 	if (SHOW_DEBUG)
 	{

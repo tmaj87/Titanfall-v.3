@@ -17,14 +17,14 @@
 #include "DrawStuff.h"
 #include "Player.h"
 
-extern tPaintTraverse oPaintTraverse;
-extern tCreateMove oCreateMove;
+extern PaintTraverse oPaintTraverse;
+extern CreateMove oCreateMove;
 extern cvmth64* VMThook;
 extern cvmth64* VMThook2;
 extern hack* myHack;
 extern CoreHaxFunc* core;
 extern DrawStuff* draw;
-extern tPlat_FloatTime Plat_FloatTime;
+extern Plat_FloatTime Plat_FloatTime;
 extern CBaseEntity* myPlayer;
 extern myStruct uberStruct;
 
