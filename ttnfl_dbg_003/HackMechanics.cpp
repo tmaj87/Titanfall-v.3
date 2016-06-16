@@ -17,7 +17,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
 	static CBaseEntity* player;
 	static Vector playerPos, screenPos, hisHeadIn2D;
-	static player_info_s pInfo;
+	static playerInfo pInfo;
 	static float distFromMe;
 	static byte type, isEnemy, a;
  
@@ -65,7 +65,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		// get player type
 		type = 1;
 		core->g_pEngine->GetPlayerInfo(i, &pInfo);
-		if (strlen(pInfo.szName) < 6)
+		if (strlen(pInfo.name) < 6)
 		{
 			type = 3;
 		}

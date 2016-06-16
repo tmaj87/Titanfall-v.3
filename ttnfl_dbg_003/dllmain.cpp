@@ -36,23 +36,6 @@ void DoMeAFavour()
 		{
 			MessageBox(NULL, "error2", "", MB_OK);
 		}
-
-		if (SHOW_DEBUG)
-		{
-			static cvmth64* tmpHook = new cvmth64();
-			if (tmpHook->bInitialize((PDWORD64*)core->g_pTrace))
-			{
-				sprintf_s(__DEBUG_BUFF, "func count: %d", tmpHook->iGetFuncCount());
-				core->debug->toFile(__DEBUG_BUFF);
-
-				static int MAX_LOOP = tmpHook->iGetFuncCount();
-				for (int i = 0; i < MAX_LOOP; i++)
-				{
-					sprintf_s(__DEBUG_BUFF, "func%d: %d", i, tmpHook->dwGetMethodAddress(i));
-					core->debug->toFile(__DEBUG_BUFF);
-				}
-			}
-		}
 	}
 	else
 	{

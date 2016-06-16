@@ -36,7 +36,7 @@ void DrawStuff::pilot(CBaseEntity* player, float distance, byte isEnemy)
 	distance /= 10;
 	alpha = 255 - distance / 2;
 
-	if (player->SetupBones(s.boneList, 128, 256, Plat_FloatTime()))
+	if (player->SetupBones(s.boneList, 128, 256, PlatFloatTime()))
 	{
 		if (s.boneList[11][2][3] > s.boneList[12][2][3]) // head bones
 		{
@@ -163,7 +163,7 @@ void DrawStuff::minion(CBaseEntity* player, float distance, byte isEnemy)
 	const int VECTOR_SIZE_ADDON = 4;
 	static usedToDrawStruct s;
 
-	if (player->SetupBones(s.boneList, 128, 256, Plat_FloatTime()))
+	if (player->SetupBones(s.boneList, 128, 256, PlatFloatTime()))
 	{
 		s.playerPos = Vector(s.boneList[12][0][3], s.boneList[12][1][3], s.boneList[12][2][3]);
 		s.boneTop = s.playerPos + Vector(0, 0, VECTOR_SIZE_ADDON);
@@ -233,7 +233,7 @@ void DrawStuff::allBones(CBaseEntity* player, int from, int to)
 	static wchar_t buff[512];
 	static int boneSize;
 
-	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
+	if (player->SetupBones(boneList, 128, 256, PlatFloatTime()))
 	{
 		for (int i = from; i < to; i++)
 		{

@@ -1,6 +1,6 @@
 #include "header.h"
 
-Plat_FloatTime Plat_FloatTime;
+Plat_FloatTime PlatFloatTime;
 
 CoreHaxFunc::CoreHaxFunc()
 {
@@ -46,19 +46,12 @@ void CoreHaxFunc::initFaces()
 
 	// ...
 	g_pEngine = (EngineClient*)g_pEngineFactory("VEngineClient013", NULL);
-	g_pTrace = (IEngineTrace*)g_pEngineFactory("EngineTraceClient004", NULL);
 	g_pEntList = (CEntList*)g_ClientFactory("VClientEntityList003", NULL);
 	g_pSurface = (ISurface*)g_VGUIFactory("VGUI_Surface031", NULL);
 	g_pIPanel = (IPanel*)g_VGUI2Factory("VGUI_Panel009", NULL);
 	//g_pDebug = (IVDebugOverlay*)g_pEngineFactory("VDebugOverlay004", NULL);
 	g_pClient = (IBaseClientDLL*)g_ClientFactory("VClient018", NULL);
-	Plat_FloatTime = (Plat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
-
-	if (SHOW_DEBUG)
-	{
-		sprintf_s(__DEBUG_BUFF, "g_pTrace: %p", g_pTrace);
-		debug->toFile(__DEBUG_BUFF);
-	}
+	PlatFloatTime = (Plat_FloatTime)GetProcAddress(hTier0, "Plat_FloatTime");
 }
 
 void CoreHaxFunc::keyManager()
@@ -129,24 +122,4 @@ void CoreHaxFunc::VectorAngles(const float *forward, float *angles)
 		angles[1] = yaw;
 		angles[2] = 0;
 	}
-}
-
-bool CoreHaxFunc::visibilityCheck(Vector &vecAbsStart, Vector &vecAbsEnd, Vector &posToWrite)
-{
-	Trace tr;
-	Ray_t ray;
-	ray.Init(vecAbsStart, vecAbsEnd);
-	core->g_pTrace->TraceRay(ray, 0x4600400B, 0, &tr); // 0x46004003
-
-	/*if (tr.m_pEnt && tr.m_pEnt == pTargetPlayer)
-		return true;*/
-
-	swprintf_s(__DEBUG_BUFF_W, L"%.4f", tr.fraction);
-	core->g_pSurface->DrawSetTextPos(posToWrite.x, posToWrite.y);
-	core->g_pSurface->DrawPrintText(__DEBUG_BUFF_W, wcslen(__DEBUG_BUFF_W));
-
-	if (tr.fraction >= 1.0f)
-		return true;
-
-	return false;
 }

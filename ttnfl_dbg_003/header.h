@@ -24,7 +24,7 @@ extern cvmth64* VMThook2;
 extern hack* myHack;
 extern CoreHaxFunc* core;
 extern DrawStuff* draw;
-extern Plat_FloatTime Plat_FloatTime;
+extern Plat_FloatTime PlatFloatTime;
 extern CBaseEntity* myPlayer;
 extern myStruct uberStruct;
 

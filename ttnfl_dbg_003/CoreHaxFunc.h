@@ -19,7 +19,6 @@ public:
 	IPanel* g_pIPanel;
 	IBaseClientDLL* g_pClient;
 	dbg* debug;
-	IEngineTrace* g_pTrace;
 
 	CoreHaxFunc();
 	void initFaces();

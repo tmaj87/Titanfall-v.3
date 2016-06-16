@@ -20,12 +20,6 @@ inline Fn getvfunc(const void* inst, size_t index, size_t offset = 0)
 typedef unsigned int VPANEL;
 typedef float matrix3x4[3][4];
 
-typedef struct player_info_s {
-	char    _0x0000[0x0008];
-	char    szName[32];
-	char    _0x0028[0x0228];
-} player_info_t;
-
 typedef void* (__cdecl* CreateInterface)(const char*, int*);
 typedef double(__cdecl* Plat_FloatTime)();
 typedef void* (__thiscall* PaintTraverse)(void*, VPANEL, bool, bool);
@@ -51,6 +45,27 @@ const DWORD64 m_vecPunchWeapon_AngleVel = 0x4;
 const DWORD64 m_vecViewOffset_x = 0x1E4;
 const DWORD64 m_vecViewOffset_y = 0x1E8;
 const DWORD64 m_vecViewOffset_z = 0x1EC;
+
+struct playerInfo {
+	char    _0x0000[0x0008];
+	char    name[32];
+	char    _0x0028[0x0228];
+};
+
+struct QAngle
+{
+	float x;
+	float y;
+	float z;
+};
+
+struct CUserCmd
+{
+	int command_number;
+	int tick_count;
+	int unk001;
+	QAngle viewangles;
+};
 
 class ClientClass
 {
@@ -118,21 +133,6 @@ public:
 	}
 };
 
-struct QAngle
-{
-	float x;
-	float y;
-	float z;
-};
-
-struct CUserCmd
-{
-	int command_number;
-	int tick_count;
-	int unk001;
-	QAngle viewangles;
-};
-
 class CInput
 {
 public:
@@ -151,9 +151,9 @@ public:
 		typedef void(__thiscall* OriginalFn)(PVOID, int&, int&);
 		return getvfunc<OriginalFn>(this, 12)(this, wide, tall);
 	}
-	bool GetPlayerInfo(int ent_num, player_info_t *pinfo)
+	bool GetPlayerInfo(int ent_num, playerInfo *pinfo)
 	{
-		typedef bool(__thiscall* OriginalFn)(PVOID, int, player_info_t *);
+		typedef bool(__thiscall* OriginalFn)(PVOID, int, playerInfo *);
 		return getvfunc<OriginalFn>(this, 16)(this, ent_num, pinfo);
 	}
 	int GetLocalPlayer(void)

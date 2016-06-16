@@ -21,8 +21,8 @@ bool hack::w2s(Vector &vOrigin, Vector &vScreen) {
 
 		float fl1DBw = 1 / w;
 
-		vScreen.x = int((wScreen / 2) + (0.5 * ((worldToScreen[0][0] * vOrigin[0] + worldToScreen[0][1] * vOrigin[1] + worldToScreen[0][2] * vOrigin[2] + worldToScreen[0][3]) * fl1DBw) * wScreen + 0.5));
-		vScreen.y = int((hScreen / 2) - (0.5 * ((worldToScreen[1][0] * vOrigin[0] + worldToScreen[1][1] * vOrigin[1] + worldToScreen[1][2] * vOrigin[2] + worldToScreen[1][3]) * fl1DBw) * hScreen + 0.5));
+		vScreen.x = (int)((wScreen / 2) + (0.5 * ((worldToScreen[0][0] * vOrigin[0] + worldToScreen[0][1] * vOrigin[1] + worldToScreen[0][2] * vOrigin[2] + worldToScreen[0][3]) * fl1DBw) * wScreen + 0.5));
+		vScreen.y = (int)((hScreen / 2) - (0.5 * ((worldToScreen[1][0] * vOrigin[0] + worldToScreen[1][1] * vOrigin[1] + worldToScreen[1][2] * vOrigin[2] + worldToScreen[1][3]) * fl1DBw) * hScreen + 0.5));
 		return 1;
 	}
 
@@ -55,7 +55,7 @@ void hack::getHead(CBaseEntity* player, float* posToWrite)
 	static matrix3x4 boneList[128];
 	static int boneId = 12;
 
-	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
+	if (player->SetupBones(boneList, 128, 256, PlatFloatTime()))
 	{
 		if (boneList[11][2][3] > boneList[12][2][3])
 		{
@@ -72,7 +72,7 @@ void hack::getBonePos(CBaseEntity* player, int boneId, float* posToWrite)
 {
 	static matrix3x4 boneList[128];
 
-	if (player->SetupBones(boneList, 128, 256, Plat_FloatTime()))
+	if (player->SetupBones(boneList, 128, 256, PlatFloatTime()))
 	{
 		posToWrite[0] = boneList[boneId][0][3];
 		posToWrite[1] = boneList[boneId][1][3];
