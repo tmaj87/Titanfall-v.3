@@ -9,6 +9,9 @@
 #ifndef SHOW_DEBUG
 	#define SHOW_DEBUG 1
 #endif
+#define PLAYER 2
+#define TITAN 1
+#define MINION 3
 #include "vmth64.h"
 #include "hack.h"
 #include "CoreHaxFunc.h"

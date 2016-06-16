@@ -49,7 +49,7 @@ void DrawStuff::pilot(CBaseEntity* player, float distance, byte isEnemy)
 		s.boneTop = s.playerPos + Vector(0, 0, VECTOR_SIZE_ADDON);
 		s.boneBottom = s.playerPos - Vector(0, 0, VECTOR_SIZE_ADDON);
 
-		if (myHack->w2s(s.boneTop, s.screenTop) && myHack->w2s(s.boneBottom, s.screenBottom) && myHack->w2s(s.playerPos, s.screenPos))
+		if (myHack->worldToScreen(s.boneTop, s.screenTop) && myHack->worldToScreen(s.boneBottom, s.screenBottom) && myHack->worldToScreen(s.playerPos, s.screenPos))
 		{
 			iSize = (s.screenBottom.y - s.screenTop.y) / 2;
 
@@ -67,16 +67,6 @@ void DrawStuff::pilot(CBaseEntity* player, float distance, byte isEnemy)
 				core->g_pSurface->DrawSetColor(0, 255, 0, alpha);
 			}
 			brackets(s.screenPos.x, s.screenPos.y, iSize);
-
-			// draw line from screen center
-			/*
-			if (distance < 1000 && isEnemy)
-			{
-			core->g_pSurface->DrawSetColor(255, 0, 0, 60);
-			drawLineFromScreenCenter(s.screenPos.x, s.screenPos.y);
-
-			}
-			*/
 		}
 	}
 }
@@ -85,17 +75,17 @@ void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte is
 {
 	switch (type)
 	{
-	case 1: // player
+	case drawType.PLAYER:
 		pilot(player, distFromMe, isEnemy);
 		break;
-	case 2: // titan
+	case drawType.TITAN:
 		if (isEnemy)
 		{
 			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
 		}
 		titan(player);
 		break;
-	case 3: // minon
+	case drawType.MINION:
 		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
 		{
 			return;
@@ -147,9 +137,9 @@ void DrawStuff::titan(CBaseEntity* player)
 	s.boneTop = s.playerPos + Vector(0, 0, VECTOR_SIZE_ADDON);
 	s.boneBottom = s.playerPos - Vector(0, 0, VECTOR_SIZE_ADDON);
 	if (
-		myHack->w2s(s.boneTop, s.screenTop)
-		&& myHack->w2s(s.boneBottom, s.screenBottom)
-		&& myHack->w2s(s.playerPos, s.screenPos)
+		myHack->worldToScreen(s.boneTop, s.screenTop)
+		&& myHack->worldToScreen(s.boneBottom, s.screenBottom)
+		&& myHack->worldToScreen(s.playerPos, s.screenPos)
 		)
 	{
 		titanSign(s.screenPos.x, s.screenPos.y, (s.screenBottom.y - s.screenTop.y) / 2);
@@ -167,9 +157,9 @@ void DrawStuff::minion(CBaseEntity* player, float distance, byte isEnemy)
 		s.boneTop = s.playerPos + Vector(0, 0, VECTOR_SIZE_ADDON);
 		s.boneBottom = s.playerPos - Vector(0, 0, VECTOR_SIZE_ADDON);
 		if (
-			myHack->w2s(s.boneTop, s.screenTop)
-			&& myHack->w2s(s.boneBottom, s.screenBottom)
-			&& myHack->w2s(s.playerPos, s.screenPos)
+			myHack->worldToScreen(s.boneTop, s.screenTop)
+			&& myHack->worldToScreen(s.boneBottom, s.screenBottom)
+			&& myHack->worldToScreen(s.playerPos, s.screenPos)
 			)
 		{
 			cross(s.screenPos.x, s.screenPos.y, (s.screenBottom.y - s.screenTop.y) / 2);
@@ -239,7 +229,7 @@ void DrawStuff::allBones(CBaseEntity* player, int from, int to)
 			boneTop = bone + Vector(0, 0, VECTOR_SIZE_ADDON);
 			boneBottom = bone - Vector(0, 0, VECTOR_SIZE_ADDON);
 
-			if (myHack->w2s(bone, boneScreen) && myHack->w2s(boneTop, screenTop) && myHack->w2s(boneBottom, screenBottom))
+			if (myHack->worldToScreen(bone, boneScreen) && myHack->worldToScreen(boneTop, screenTop) && myHack->worldToScreen(boneBottom, screenBottom))
 			{
 				boneSize = screenBottom.x - screenTop.x;
 

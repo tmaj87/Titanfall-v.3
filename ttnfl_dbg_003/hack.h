@@ -5,10 +5,9 @@
 class hack
 {
 public:
-	float getDist(Vector& myCoords, Vector& enemyCoords);
-	bool w2s(Vector &vOrigin, Vector &vScreen);
+	float getDist(Vector&, Vector&);
+	bool worldToScreen(Vector&, Vector&);
 	void getMatrix();
-	bool traceray(CBaseEntity* me, CBaseEntity* you);
 	void getHead(CBaseEntity*, float*);
 	void getBonePos(CBaseEntity*, int, float*);
 	void getEyePosition(CBaseEntity* player, float* returnAngles);

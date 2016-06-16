@@ -20,26 +20,26 @@ void DoMeAFavour()
 {
 	VMThook = new cvmth64();
 	VMThook2 = new cvmth64();
-
 	core = new CoreHaxFunc();
+
 	if (VMThook->bInitialize((PDWORD64*)core->g_pIPanel))
 	{
 		oPaintTraverse = (PaintTraverse)VMThook->dwHookMethod((DWORD64)HackMechanics::pt, 46);
 		myHack = new hack();
 		draw = new DrawStuff();
-
-		if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
-		{
-			oCreateMove = (CreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::Hooked_CreateMove, 24);
-		}
-		else
-		{
-			MessageBox(NULL, "error2", "", MB_OK);
-		}
 	}
 	else
 	{
 		MessageBox(NULL, "error1", "", MB_OK);
+	}
+
+	if (VMThook2->bInitialize((PDWORD64*)core->g_pClient))
+	{
+		oCreateMove = (CreateMove)VMThook2->dwHookMethod((DWORD64)HackMechanics::cm, 24);
+	}
+	else
+	{
+		MessageBox(NULL, "error2", "", MB_OK);
 	}
 }
 

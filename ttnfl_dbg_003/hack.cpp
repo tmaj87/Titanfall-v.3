@@ -8,7 +8,7 @@ float hack::getDist(Vector& myCoords, Vector& enemyCoords)
 		pow(enemyCoords[2] - myCoords[2], 2.0));
 }
 
-bool hack::w2s(Vector &vOrigin, Vector &vScreen) {
+bool hack::worldToScreen(Vector &vOrigin, Vector &vScreen) {
 	const matrix3x4& worldToScreen = *m_vMatrix;
 
 	float w = worldToScreen[3][0] * vOrigin[0] + worldToScreen[3][1] * vOrigin[1] + worldToScreen[3][2] * vOrigin[2] + worldToScreen[3][3]; //Calculate the angle in compareson to the player's camera.
@@ -31,14 +31,7 @@ bool hack::w2s(Vector &vOrigin, Vector &vScreen) {
 
 void hack::getMatrix()
 {
-	cvmth64* clientHook = new cvmth64;
-
-	if (!clientHook->bInitialize((PDWORD64*)core->g_pClient))
-	{
-		//
-	}
-
-	DWORD_PTR dwFunc1 = (DWORD_PTR)clientHook->dwGetMethodAddress(74) + 0x6;
+	DWORD_PTR dwFunc1 = (DWORD_PTR)VMThook2->dwGetMethodAddress(74) + 0x6;
 	DWORD_PTR dwRenderHolder = (DWORD_PTR)((*(DWORD*)(dwFunc1 + 0x3)) + (dwFunc1 + 0x7)); // cut 4 bytes
 
 	CViewRender* pRender;

@@ -9,9 +9,9 @@ const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
 float const AIMBOT_MAX_DISTANCE = 80;
 float const AIMBOT_AUTO_DISTANCE = 12;
 
-VPANEL HackMechanics::mstp;
-int HackMechanics::mstpWidth;
-int HackMechanics::mstpHeight;
+VPANEL HackMechanics::matSystemTopPanel;
+int HackMechanics::matSystemTopPanelWidth;
+int HackMechanics::matSystemTopPanelHeight;
 
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
@@ -57,7 +57,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		myHack->getEyePosition(myPlayer, myEyes);
 
 		playerPos = player->GetAbsOrigin();
-		if (!myHack->w2s(playerPos, screenPos))
+		if (!myHack->worldToScreen(playerPos, screenPos))
 		{
 			continue;
 		}
@@ -121,7 +121,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				myHack->getHead(player, enemyAimPosition);
 			}
 
-			if (myHack->w2s(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
+			if (myHack->worldToScreen(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
 			{
 				// vector subtraction
 				deltaVector[0] = enemyAimPosition[0] - myEyes[0];
@@ -132,8 +132,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				myEnemiesList[targetCursor] = TargetList(vectorAngle, myEyes, enemyAimPosition);
 				//
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
-					pow(double(mstpWidth / 2 - hisHeadIn2D.x), 2.0) +
-					pow(double(mstpHeight / 2 - hisHeadIn2D.y), 2.0)
+					pow(double(matSystemTopPanelWidth / 2 - hisHeadIn2D.x), 2.0) +
+					pow(double(matSystemTopPanelHeight / 2 - hisHeadIn2D.y), 2.0)
 				);
 
 				targetCursor++;
@@ -157,7 +157,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 }
 
 
-void __fastcall HackMechanics::Hooked_CreateMove(void* ptr, int sequence_number, float input_sample_frametime, bool active)
+void __fastcall HackMechanics::cm(void* ptr, int sequence_number, float input_sample_frametime, bool active)
 {
 	static CInput* pInput;
 
@@ -217,20 +217,20 @@ void HackMechanics::initPanel(IPanel* pThis, VPANEL vguiPanel)
 {
 	if (!strcmp(pThis->GetName(vguiPanel), "MatSystemTopPanel") && pThis->GetParent(vguiPanel) == 0)
 	{
-		mstp = vguiPanel;
-		core->g_pIPanel->GetSize(vguiPanel, mstpWidth, mstpHeight);
+		matSystemTopPanel = vguiPanel;
+		core->g_pIPanel->GetSize(vguiPanel, matSystemTopPanelWidth, matSystemTopPanelHeight);
 	}
 }
 
 
 bool HackMechanics::isCorrectPanel(IPanel* pThis, VPANEL vguiPanel)
 {
-	if (mstp == NULL)
+	if (matSystemTopPanel == NULL)
 	{
 		initPanel(pThis, vguiPanel);
 	}
 
-	if (vguiPanel == mstp)
+	if (vguiPanel == matSystemTopPanel)
 	{
 		return true;
 	}
