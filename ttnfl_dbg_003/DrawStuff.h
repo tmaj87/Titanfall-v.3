@@ -17,10 +17,9 @@ public:
 	void inTheMiddle(VPANEL vguiPanel);
 	void off();
 	void pilot(CBaseEntity*, float, byte);
-	void titan(CBaseEntity*, float, byte);
+	void titan(CBaseEntity*);
 	void minion(CBaseEntity*, float, byte);
 	void onRadar(Vector& screenPos);
-	void punchedCrosshair(float, float);
 	void lineFromScreenCenter(int, int);
 	void brackets(int, int, int);
 	void titanSign(int, int, int);
@@ -29,7 +28,6 @@ public:
 	void stat();
 	void statLn();
 	void allBones(CBaseEntity*, int, int);
-	void crossAt(int, int);
 	void byType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
 };
 

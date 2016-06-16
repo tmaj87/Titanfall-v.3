@@ -93,7 +93,7 @@ void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte is
 		{
 			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
 		}
-		titan(player, distFromMe, isEnemy);
+		titan(player);
 		break;
 	case 3: // minon
 		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
@@ -138,10 +138,8 @@ void DrawStuff::titanSign(int x, int y, int size)
 	core->g_pSurface->DrawLine(x - size / 2, y - size * 2, x + size / 2, y - size * 2); // bottom line
 }
 
-void DrawStuff::titan(CBaseEntity* player, float distance, byte isEnemy)
+void DrawStuff::titan(CBaseEntity* player)
 {
-	// distance is unused
-	// isEnemy is unused
 	const int VECTOR_SIZE_ADDON = 100;
 	static usedToDrawStruct s;
 
