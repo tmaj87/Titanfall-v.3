@@ -1,8 +1,16 @@
 #include "header.h"
 
 int myPlayerIdx;
+CBaseEntity* player;
 CBaseEntity* myPlayer;
+Player plyr;
+Player myPlyr;
 myStruct uberStruct;
+
+Vector playerPos, screenPos, hisHeadIn2D;
+playerInfo pInfo;
+float distFromMe;
+byte type, isEnemy, a;
 
 // aimbot..!
 const byte AIMBOT_PRESS_KEY = VK_LBUTTON;
@@ -15,33 +23,18 @@ int HackMechanics::matSystemTopPanelHeight;
 
 void HackMechanics::playersLoop(VPANEL vguiPanel)
 {
-	static CBaseEntity* player;
-	static Vector playerPos, screenPos, hisHeadIn2D;
-	static playerInfo pInfo;
-	static float distFromMe;
-	static byte type, isEnemy, a;
- 
 	// aim part
 	static float aimAngle[3], vectorAngle[3], deltaVector[3], myEyes[3], enemyAimPosition[3]; // ffs, do it with Vector
 	static Vector vecEnemyAimPosition;
 	int targetCursor = 0;
 	TargetList* myEnemiesList = new TargetList[32];
-	//
-	//
-	ExtendedPlayerClass* playerList[32];
-	//
+
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 	{
-		player = core->g_pEntList->GetClientEntity(i);
+		plyr = Player(i);
 
-		if (
-			player == NULL // struct player {int lifeState, int team, int inventory}
-			|| i == myPlayerIdx // take mem pointer in constructor
-			|| *(int*)(DWORD64(player) + m_lifeState) != 0
-			|| *(int*)(DWORD64(player) + m_iTeamNum) == 0
-			|| *(int*)(DWORD64(player) + m_inventory) == 0
-			)
+		if (i == myPlayerIdx || plyr.check())
 		{
 			continue;
 		}
@@ -62,16 +55,15 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			continue;
 		}
 
-		// get player type
-		type = 1;
+		type = PLAYER;
 		core->g_pEngine->GetPlayerInfo(i, &pInfo);
 		if (strlen(pInfo.name) < 6)
 		{
-			type = 3;
+			type = MINION;
 		}
 		if (*(int*)(DWORD64(player) + m_iHealth) > 700)
 		{
-			type = 2;
+			type = TITAN;
 		}
 
 		// is enemy?
@@ -102,13 +94,13 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 		draw->byType(player, type, distFromMe, isEnemy, a);
 
-		if (RADAR_SWITCH && type != 3)
+		if (RADAR_SWITCH && type != MINION)
 		{
 			draw->onRadar(screenPos);
 		}
 
 		// aimbot &...
-		if (isEnemy && type != 2)
+		if (isEnemy && type != TITAN)
 		{
 			if (type == 1)
 			{
@@ -202,15 +194,9 @@ void __fastcall HackMechanics::cm(void* ptr, int sequence_number, float input_sa
 bool HackMechanics::isAboutMeAvailable()
 {
 	myPlayerIdx = core->g_pEngine->GetLocalPlayer();
-	myPlayer = core->g_pEntList->GetClientEntity(myPlayerIdx);
-	if (
-		myPlayer == NULL
-		|| *(int*)(DWORD64(myPlayer) + m_lifeState) != 0
-		)
-	{
-		return false;
-	}
-	return true;
+	myPlyr = Player(myPlayerIdx);
+
+	return  myPlyr.check();
 }
 
 void HackMechanics::initPanel(IPanel* pThis, VPANEL vguiPanel)

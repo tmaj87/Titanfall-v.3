@@ -13,7 +13,6 @@
 #include "hack.h"
 #include "CoreHaxFunc.h"
 #include "HackMechanics.h"
-#include "ExtendedPlayerClass.h"
 #include "DrawStuff.h"
 #include "Player.h"
 
@@ -26,6 +25,8 @@ extern CoreHaxFunc* core;
 extern DrawStuff* draw;
 extern Plat_FloatTime PlatFloatTime;
 extern CBaseEntity* myPlayer;
+extern Player myPlyr;
+extern int myPlayerIdx;
 extern myStruct uberStruct;
 
 extern bool __DEBUG;

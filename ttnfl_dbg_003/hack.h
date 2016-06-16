@@ -28,3 +28,9 @@ struct myStruct {
 		aimAt[2] = 0;
 	}
 };
+
+enum drawType {
+	TITAN = 0x01,
+	PLAYER,
+	MINION
+};

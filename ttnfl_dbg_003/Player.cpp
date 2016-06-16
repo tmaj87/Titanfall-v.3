@@ -1,13 +1,23 @@
-#include "Player.h"
+#include "header.h"
 
-
-Player::Player(CBaseEntity* player)
+Player::Player(int index)
 {
-	lifeState = *(int*)(DWORD64(player) + m_lifeState);
-	team = *(int*)(DWORD64(player) + m_iTeamNum);
-	inventory = *(int*)(DWORD64(player) + m_inventory);
+	player = core->g_pEntList->GetClientEntity(index);
+
+	enemy = true;
+	if (team == myPlyr.team) {
+		enemy = false;
+	}
 }
 
+bool Player::check() {
+	return !(
+		player == NULL
+		|| lifeState != 0
+		|| team == 0
+		|| inventory == 0
+		);
+}
 
 Player::~Player()
 {

@@ -30,9 +30,3 @@ public:
 	void allBones(CBaseEntity*, int, int);
 	void byType(CBaseEntity* player, byte type, float distFromMe, byte isEnemy, byte);
 };
-
-enum drawType {
-	TITAN = 1,
-	PLAYER = 2,
-	MINION = 3
-};

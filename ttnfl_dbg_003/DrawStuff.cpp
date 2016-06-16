@@ -1,6 +1,5 @@
 #include "header.h"
 
-
 void DrawStuff::inTheMiddle(VPANEL vguiPanel)
 {
 	static int w, h;
@@ -75,17 +74,17 @@ void DrawStuff::byType(CBaseEntity* player, byte type, float distFromMe, byte is
 {
 	switch (type)
 	{
-	case drawType.PLAYER:
+	case PLAYER:
 		pilot(player, distFromMe, isEnemy);
 		break;
-	case drawType.TITAN:
+	case TITAN:
 		if (isEnemy)
 		{
 			core->g_pSurface->DrawSetColor(255, 153, 0, alpha);
 		}
 		titan(player);
 		break;
-	case drawType.MINION:
+	case MINION:
 		if (!isEnemy || *(int*)(DWORD64(player) + m_hGroundEntity) == -1) // remove ally and weapons on ground
 		{
 			return;
