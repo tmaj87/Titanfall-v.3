@@ -97,12 +97,12 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			if (myHack->worldToScreen(Vector(enemyAimPosition[0], enemyAimPosition[1], enemyAimPosition[2]), hisHeadIn2D))
 			{
 				// vector subtraction
-				deltaVector[0] = enemyAimPosition[0] - myPlyr.eyePos[0];
-				deltaVector[1] = enemyAimPosition[1] - myPlyr.eyePos[1];
-				deltaVector[2] = enemyAimPosition[2] - myPlyr.eyePos[2];
+				deltaVector[0] = enemyAimPosition[0] - myPlyr.eyesPositon[0];
+				deltaVector[1] = enemyAimPosition[1] - myPlyr.eyesPositon[1];
+				deltaVector[2] = enemyAimPosition[2] - myPlyr.eyesPositon[2];
 				core->VectorAngles(deltaVector, vectorAngle);
 				//
-				myEnemiesList[targetCursor] = TargetList(vectorAngle, myPlyr.eyePos, enemyAimPosition);
+				myEnemiesList[targetCursor] = TargetList(vectorAngle, myPlyr.eyesPositon, enemyAimPosition);
 				//
 				myEnemiesList[targetCursor].distance2D = (float)sqrt(
 					pow(double(matSystemTopPanelWidth / 2 - hisHeadIn2D.x), 2.0) +
