@@ -1,13 +1,12 @@
 #include "header.h"
 
-int myPlayerIdx;
-Player plyr;
-Player myPlyr;
+int myPlayerIndex;
+Player player;
+Player myPlayer;
 myStruct uberStruct;
 
 Vector screenPos, hisHeadIn2D;
 
-float distFromMe;
 byte a;
 
 // aimbot..!
@@ -30,9 +29,9 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 
 	for (int i = 0; i < core->g_pEntList->GetHighestEntityIndex(); i++)
 	{
-		plyr = Player(i);
+		player = Player(i);
 
-		if (i == myPlayerIdx || !plyr.check())
+		if (i == myPlayerIndex || !player.check())
 		{
 			continue;
 		}
@@ -45,15 +44,14 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			matrixCached = 1;
 		}
 
-		if (!myHack->worldToScreen(plyr.position, screenPos))
+		if (!myHack->worldToScreen(player.position, screenPos))
 		{
 			continue;
 		}
 
-		distFromMe = myHack->getDist(myPlyr.position, plyr.position);
-		if (distFromMe < 5000) // setDrawAlpha();
+		if (player.distanceFromMe < 5000) // setDrawAlpha();
 		{
-			a = 255 - distFromMe / 20;
+			a = 255 - player.distanceFromMe / 20;
 			if (a < 60)
 			{
 				a = 60;
@@ -64,7 +62,7 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			a = 0;
 		}
 
-		if (plyr.enemy) // setPlayerColor();
+		if (player.enemy) // setPlayerColor();
 		{
 			core->g_pSurface->DrawSetColor(255, 0, 0, a);
 		}
@@ -73,36 +71,36 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 			core->g_pSurface->DrawSetColor(0, 255, 0, 40);
 		}
 
-		draw->drawMarkBasedOnType(plyr.player, plyr.type, distFromMe, plyr.enemy, a);
+		draw->drawMarkBasedOnType(player.player, player.type, player.distanceFromMe, player.enemy, a);
 
-		if (RADAR_SWITCH && plyr.type != MINION)
+		if (RADAR_SWITCH && player.type != MINION)
 		{
 			draw->onRadar(screenPos);
 		}
 
 		// aimbot &...
-		if (plyr.enemy && plyr.type != TITAN)
+		if (player.enemy && player.type != TITAN)
 		{
-			if (plyr.type == PLAYER)
+			if (player.type == PLAYER)
 			{
 				static int randomBone;
 				randomBone = rand() % 3 + 9;
-				myHack->getBonePos(plyr.player, randomBone, &enemyAimPosition); // arg0: plyr.position?
+				myHack->getBonePos(player.player, randomBone, &enemyAimPosition); // arg0: plyr.position?
 			}
 			else
 			{
-				myHack->getHead(plyr.player, &enemyAimPosition); // arg0: plyr.position?
+				myHack->getHead(player.player, &enemyAimPosition); // arg0: plyr.position?
 			}
 
 			if (myHack->worldToScreen(enemyAimPosition, hisHeadIn2D))
 			{
-				deltaVec = enemyAimPosition - myPlyr.eyesPositon;
+				deltaVec = enemyAimPosition - myPlayer.eyesPositon;
 				float deltaFlo[3] = {deltaVec[0], deltaVec[1], deltaVec[2]};
 				core->VectorAngles(deltaFlo, vectorAngle);
-				//
-				myEnemiesList[targetCursor] = TargetList(vectorAngle, myPlyr.eyesPositon, enemyAimPosition);
-				//
-				myEnemiesList[targetCursor].distance2D = (float)sqrt(
+
+				myEnemiesList[targetCursor] = TargetList(vectorAngle);
+				myEnemiesList[targetCursor].distance3D = player.distanceFromMe
+				myEnemiesList[targetCursor].distance2D = (float)sqrt( // refactor
 					pow(double(matSystemTopPanelWidth / 2 - hisHeadIn2D.x), 2.0) +
 					pow(double(matSystemTopPanelHeight / 2 - hisHeadIn2D.y), 2.0)
 				);
@@ -119,8 +117,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 		// pickNearestTargetIn2D();
 		std::sort(myEnemiesList, myEnemiesList + targetCursor, CompareTargetsIn2D());
 		uberStruct.enemyDistance2D = myEnemiesList[0].distance2D;
-		uberStruct.aimAt[0] = myEnemiesList[0].AimbotAngle[0];
-		uberStruct.aimAt[1] = myEnemiesList[0].AimbotAngle[1];
+		uberStruct.aimAt[0] = myEnemiesList[0].aimAngle[0];
+		uberStruct.aimAt[1] = myEnemiesList[0].aimAngle[1];
 	}
 
 	targetCursor = 0;
@@ -172,10 +170,10 @@ void __fastcall HackMechanics::cm(void* ptr, int sequence_number, float input_sa
 
 bool HackMechanics::isAboutMeAvailable()
 {
-	myPlayerIdx = core->g_pEngine->GetLocalPlayer();
-	myPlyr = Player(myPlayerIdx);
+	myPlayerIndex = core->g_pEngine->GetLocalPlayer();
+	myPlayer = Player(myPlayerIndex);
 
-	return  myPlyr.check();
+	return  myPlayer.check();
 }
 
 void HackMechanics::initPanel(IPanel* pThis, VPANEL vguiPanel)

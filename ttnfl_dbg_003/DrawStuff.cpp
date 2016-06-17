@@ -202,7 +202,7 @@ void DrawStuff::debug()
 	core->g_pSurface->DrawSetTextPos(10, 240);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 
-	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", myPlyr.punchVec.x, myPlyr.punchVec.y);
+	swprintf_s(buff, L"punchVec: x:%.2f,y:%.2f", myPlayer.punchVec.x, myPlayer.punchVec.y);
 	core->g_pSurface->DrawSetTextPos(10, 260);
 	core->g_pSurface->DrawPrintText(buff, wcslen(buff));
 }

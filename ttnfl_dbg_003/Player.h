@@ -18,11 +18,14 @@ public:
 	Vector eyesPositon;
 	byte type;
 	playerInfo pInfo;
+	double distanceFromMe;
 
 	Player();
 	Player(int);
 	bool check();
 	void getEyes();
+	bool isEnemy();
+	void setType();
 	~Player();
 };
 

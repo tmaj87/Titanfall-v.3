@@ -5,7 +5,7 @@
 class hack
 {
 public:
-	float getDist(Vector&, Vector&);
+	float get3dDist(Vector&, Vector&);
 	bool worldToScreen(Vector&, Vector&);
 	void getMatrix();
 	void getHead(CBaseEntity*, Vector*);
@@ -32,4 +32,36 @@ enum drawType {
 	TITAN = 0x01,
 	PLAYER,
 	MINION
+};
+
+struct TargetList
+{
+	float distance3D;
+	float distance2D;
+	Vector aimAngle;
+
+	TargetList()
+	{
+	}
+
+	TargetList(Vector angle)
+	{
+		aimAngle = angle;
+	}
+};
+
+struct CompareTargetsIn2D
+{
+	bool operator() (TargetList & lhs, TargetList & rhs)
+	{
+		return lhs.distance2D < rhs.distance2D;
+	}
+};
+
+struct CompareTargetsIn3D
+{
+	bool operator() (TargetList & lhs, TargetList & rhs)
+	{
+		return lhs.distance3D < rhs.distance3D;
+	}
 };

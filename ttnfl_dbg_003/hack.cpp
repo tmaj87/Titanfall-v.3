@@ -1,6 +1,6 @@
 #include "header.h"
 
-float hack::getDist(Vector& myCoords, Vector& enemyCoords)
+float hack::get3dDist(Vector& myCoords, Vector& enemyCoords)
 {
 	return (float)sqrt(
 		pow(enemyCoords[0] - myCoords[0], 2.0) +
