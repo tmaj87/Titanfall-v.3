@@ -98,8 +98,8 @@ void HackMechanics::playersLoop(VPANEL vguiPanel)
 				float deltaFlo[3] = {deltaVec[0], deltaVec[1], deltaVec[2]};
 				core->VectorAngles(deltaFlo, vectorAngle);
 
-				myEnemiesList[targetCursor] = TargetList(vectorAngle);
-				myEnemiesList[targetCursor].distance3D = player.distanceFromMe
+				myEnemiesList[targetCursor] = TargetList(Vector(vectorAngle[0], vectorAngle[1], vectorAngle[2]));
+				myEnemiesList[targetCursor].distance3D = player.distanceFromMe;
 				myEnemiesList[targetCursor].distance2D = (float)sqrt( // refactor
 					pow(double(matSystemTopPanelWidth / 2 - hisHeadIn2D.x), 2.0) +
 					pow(double(matSystemTopPanelHeight / 2 - hisHeadIn2D.y), 2.0)
